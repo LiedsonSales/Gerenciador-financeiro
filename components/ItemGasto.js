@@ -11,6 +11,6 @@ const ItemGasto = ({descricao, valor, categoria}) => {
 
 const styles = StyleSheet.create({
     linha: {
-        
+        flexDirection: 'row'
     }
 })
