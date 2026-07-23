@@ -1,12 +1,35 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import ListaGasto  from './components/ListaGastos';
 import FormularioGasto from './components/formularioGasto';
 
+const CHAVE_ARMAZENAMENTO = 'gastos';
+
 export default function App() {
-  const [gastos, setGastos] = useState([
-    { descricao: 'iFood', valor: 23.50, categoria: 'Alimentação'}
-  ]);
+  const [gastos, setGastos] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    const carregar = async () => {
+      try {
+        const dados = await AsyncStorage.getItem(CHAVE_ARMAZENAMENTO);
+        setGastos(dados ? JSON.parse(dados) : []);
+      } catch(erro) {
+        console.log('Erro ao carregar:', erro);
+      } finally {
+        setCarregando(false);
+      }
+    };
+    carregar();
+    
+  }, []);
+
+  useEffect(() => {
+    if (!carregando) {
+      AsyncStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(gastos));
+    }
+  }, [gastos]);
 
   const total = gastos.reduce((soma, item) => soma + item.valor, 0);
 
