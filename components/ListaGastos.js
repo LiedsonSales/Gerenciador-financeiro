@@ -1,5 +1,5 @@
 import { FlatList, Text, StyleSheet } from "react-native";
-import { ItemGasto } from './ItemGasto';
+import ItemGasto from "./ItemGasto";
 
 const ListaGasto = ({gastos, total}) => {
     return (
@@ -13,8 +13,24 @@ const ListaGasto = ({gastos, total}) => {
                     categoria={item.categoria}
                 />
             )}
+            ListHeaderComponent={<Text style={styles.titulo}>Meus gastos</Text>}
+            ListFooterComponent={<Text styles={styles.total}>Total: R$ {total.toFixed(2)}</Text>}
+            ListEmptyComponent={<Text>Nenhum gasto registrado ainda.</Text>}
         />
     )
 }
+
+const styles = StyleSheet.create({
+    titulo: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20
+    },
+    total: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginTop: 15
+    }
+})
 
 export default ListaGasto;
