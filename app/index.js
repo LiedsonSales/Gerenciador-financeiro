@@ -33,6 +33,10 @@ export default function index() {
                 title='Adicionar gasto'
                 onPress={() => router.push('/adicionar')}
             />
+            <Button 
+                title='Ver resumo'
+                onPress={() => router.push('/resumo')}
+            />
         </View>
     );
 }
