@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { StyleSheet, View, Button } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ListaGastos from '../components/ListaGastos';
 
@@ -8,22 +8,21 @@ const CHAVE_ARMAZENAMENTO = 'gastos';
 
 export default function index() {
     const [gastos, setGastos] = useState([]);
-    const [carregando, setCarregando] = useState(true);
     const router = useRouter();
 
-    useEffect(() => {
-        const carregar = async () => {
-            try {
-                const dados = await AsyncStorage.getItem(CHAVE_ARMAZENAMENTO);
-                setGastos(dados ? JSON.parse(dados) : []);
-            } catch (erro) {
-                console.log('Erro ao carregar:', erro);
-            } finally {
-                setCarregando(false);
-            }
-        };
-        carregar();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            const carregar = async () => {
+                try {
+                    const dados = await AsyncStorage.getItem(CHAVE_ARMAZENAMENTO);
+                    setGastos(gastos ? JSON.parse(dados) : []);
+                } catch (erro) {
+                    console.log('Erro ao carregar:', erro);
+                }
+            };
+            carregar();
+        }, [])
+    );
 
     const total = gastos.reduce((soma, item) => soma + item.valor, 0);
 
