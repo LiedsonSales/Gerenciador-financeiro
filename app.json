@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "gerenciador-financeiro",
-    "slug": "gerenciador-financeiro",
+    "slug": "sonic",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,20 +13,47 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.gerenciador-financeiro",
+      "appleTeamId": "4TJH92XDGN",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.gerenciadorfinanceiro"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "scheme": "gerenciadorfinanceiro",
     "plugins": [
-      "expo-router"
-    ]
+      "expo-router",
+      "@bacons/apple-targets"
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "bundleIdentifier": "com.anonymous.gerenciador-financeiro.widget",
+                  "targetName": "GastoWidget"
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "0e8d3b82-e34a-436b-9988-1b7e908e5b2d"
+      }
+    },
+    "owner": "sonics-team"
   }
 }

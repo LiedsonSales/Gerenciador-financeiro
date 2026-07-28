@@ -15,7 +15,7 @@ export default function index() {
             const carregar = async () => {
                 try {
                     const dados = await AsyncStorage.getItem(CHAVE_ARMAZENAMENTO);
-                    setGastos(gastos ? JSON.parse(dados) : []);
+                    setGastos(dados ? JSON.parse(dados) : []);
                 } catch (erro) {
                     console.log('Erro ao carregar:', erro);
                 }
