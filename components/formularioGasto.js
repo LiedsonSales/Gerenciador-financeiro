@@ -16,7 +16,7 @@ const FormularioGasto = ({ aoAdicionar}) => {
         aoAdicionar({
             descricao: descricaoTexto,
             valor: valorNumero,
-            categoria: categoriaTexto,
+            categoria: categoriaTexto.trim(),
         });
 
         setdescricaoTexto('');

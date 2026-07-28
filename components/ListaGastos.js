@@ -1,4 +1,4 @@
-import { FlatList, Text, StyleSheet } from 'react-native';
+import { FlatList, Text, StyleSheet, Button, ScrollView } from 'react-native';
 import ItemGasto from './ItemGasto';
 
 const ListaGastos = ({ gastos, total }) => {
