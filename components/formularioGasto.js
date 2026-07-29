@@ -1,65 +1,74 @@
-import { useState } from "react";
-import { View, TextInput, Button, StyleSheet } from "react-native";
+import { useState, useEffect } from 'react';
+import { View, TextInput, Button, StyleSheet } from 'react-native';
 
-const FormularioGasto = ({ aoAdicionar}) => {
-    const [descricaoTexto, setdescricaoTexto] = useState('');
-    const [valorTexto, setValorTexto] = useState('');
-    const [categoriaTexto, setcategoriaTexto] = useState('');
+const FormularioGasto = ({ aoSalvar, gastoInicial, textoBotao = 'Adicionar Gasto' }) => {
+  const [descricaoTexto, setDescricaoTexto] = useState('');
+  const [valorTexto, setValorTexto] = useState('');
+  const [categoriaTexto, setCategoriaTexto] = useState('');
 
-    const handleAdicionar = () => {
-        const valorNumero = parseFloat(valorTexto) || 0;
+  useEffect(() => {
+    if (gastoInicial) {
+      setDescricaoTexto(gastoInicial.descricao);
+      setValorTexto(String(gastoInicial.valor));
+      setCategoriaTexto(gastoInicial.categoria);
+    }
+  }, [gastoInicial]);
 
-        if (descricaoTexto.trim() === '' || categoriaTexto.trim() === '' || valorNumero <= 0) {
-            return
-        }
+  const handleSalvar = () => {
+    const valorNumero = parseFloat(valorTexto) || 0;
 
-        aoAdicionar({
-            descricao: descricaoTexto,
-            valor: valorNumero,
-            categoria: categoriaTexto.trim(),
-        });
+    if (descricaoTexto.trim() === '' || categoriaTexto.trim() === '' || valorNumero <= 0) {
+      return;
+    }
 
-        setdescricaoTexto('');
-        setValorTexto('');
-        setcategoriaTexto('');
-    };
+    aoSalvar({
+      descricao: descricaoTexto.trim(),
+      valor: valorNumero,
+      categoria: categoriaTexto.trim(),
+    });
 
-    return (
-        <View>
-            <TextInput
-                style={styles.input}
-                placeholder="Descrição"
-                value={descricaoTexto}
-                onChangeText={setdescricaoTexto}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Valor"
-                value={valorTexto}
-                onChangeText={setValorTexto}
-                keyboardType="numeric"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Categoria"
-                value={categoriaTexto}
-                onChangeText={setcategoriaTexto}
-            />
-            <Button title="Adicionar gasto" onPress={handleAdicionar}/>
-        </View>
-    )
-}
+    if (!gastoInicial) {
+      setDescricaoTexto('');
+      setValorTexto('');
+      setCategoriaTexto('');
+    }
+  };
+
+  return (
+    <View>
+      <TextInput
+        style={styles.input}
+        placeholder="Descrição"
+        value={descricaoTexto}
+        onChangeText={setDescricaoTexto}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Valor"
+        value={valorTexto}
+        onChangeText={setValorTexto}
+        keyboardType="numeric"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Categoria"
+        value={categoriaTexto}
+        onChangeText={setCategoriaTexto}
+      />
+      <Button title={textoBotao} onPress={handleSalvar} />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        padding: 10,
-        width: '100%',
-        marginTop: 10,
-    },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    width: '100%',
+    marginTop: 10,
+  },
 });
-
 
 export default FormularioGasto;

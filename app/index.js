@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState, useCallback } from 'react';
 import { StyleSheet, View, Button } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,46 +6,56 @@ import ListaGastos from '../components/ListaGastos';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
-export default function index() {
-    const [gastos, setGastos] = useState([]);
-    const router = useRouter();
+export default function Index() {
+  const [gastos, setGastos] = useState([]);
+  const router = useRouter();
 
-    useFocusEffect(
-        useCallback(() => {
-            const carregar = async () => {
-                try {
-                    const dados = await AsyncStorage.getItem(CHAVE_ARMAZENAMENTO);
-                    setGastos(dados ? JSON.parse(dados) : []);
-                } catch (erro) {
-                    console.log('Erro ao carregar:', erro);
-                }
-            };
-            carregar();
-        }, [])
-    );
+  useFocusEffect(
+    useCallback(() => {
+      const carregar = async () => {
+        try {
+          const dados = await AsyncStorage.getItem(CHAVE_ARMAZENAMENTO);
+          let lista = dados ? JSON.parse(dados) : [];
 
-    const total = gastos.reduce((soma, item) => soma + item.valor, 0);
+          const precisaMigrar = lista.some((g) => !g.id);
+          if (precisaMigrar) {
+            lista = lista.map((g) =>
+              g.id ? g : { ...g, id: Date.now().toString() + Math.random().toString(36).slice(2) }
+            );
+            await AsyncStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(lista));
+          }
 
-    return (
-        <View style={styles.container}>
-            <ListaGastos gastos={gastos} total={total}/>
-            <Button
-                title='Adicionar gasto'
-                onPress={() => router.push('/adicionar')}
-            />
-            <Button 
-                title='Ver resumo'
-                onPress={() => router.push('/resumo')}
-            />
-        </View>
-    );
+          setGastos(lista);
+        } catch (erro) {
+          console.log('Erro ao carregar:', erro);
+        }
+      };
+      carregar();
+    }, [])
+  );
+
+  const excluirGasto = async (id) => {
+    const novaLista = gastos.filter((g) => g.id !== id);
+    setGastos(novaLista);
+    await AsyncStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(novaLista));
+  };
+
+  const total = gastos.reduce((soma, item) => soma + item.valor, 0);
+
+  return (
+    <View style={styles.container}>
+      <ListaGastos gastos={gastos} total={total} aoExcluir={excluirGasto} />
+      <Button title="Adicionar Gasto" onPress={() => router.push('/adicionar')} />
+      <Button title="Ver Resumo" onPress={() => router.push('/resumo')} />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        paddingTop: 20,
-        paddingHorizontal: 20,
-    }
-})
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingTop: 20,
+    paddingHorizontal: 20,
+  },
+});
