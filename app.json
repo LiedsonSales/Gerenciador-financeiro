@@ -34,7 +34,8 @@
     "scheme": "gerenciadorfinanceiro",
     "plugins": [
       "expo-router",
-      "@bacons/apple-targets"
+      "@bacons/apple-targets",
+      "@react-native-community/datetimepicker"
     ],
     "extra": {
       "router": {},

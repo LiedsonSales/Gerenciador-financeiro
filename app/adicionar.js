@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import FormularioGasto from '../components/formularioGasto';
+import FormularioGasto from '../components/FormularioGasto';
+import { registrarEvento } from '../utils/historico';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
@@ -41,6 +42,7 @@ export default function Adicionar() {
         );
       } else {
         novaLista = [...gastosAtuais, { id: Date.now().toString(), ...dadosGasto }];
+        await registrarEvento('adicionado', dadosGasto);
       }
 
       await AsyncStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(novaLista));

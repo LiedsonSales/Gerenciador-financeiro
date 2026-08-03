@@ -3,6 +3,7 @@ import { StyleSheet, View, Button } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ListaGastos from '../components/ListaGastos';
+import { registrarEvento } from '../utils/historico';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
@@ -35,9 +36,13 @@ export default function Index() {
   );
 
   const excluirGasto = async (id) => {
+    const gastoRemovido = gastos.find((g) => g.id === id);
     const novaLista = gastos.filter((g) => g.id !== id);
     setGastos(novaLista);
     await AsyncStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(novaLista));
+    if (gastoRemovido) {
+      await registrarEvento('removido', gastoRemovido);
+    }
   };
 
   const total = gastos.reduce((soma, item) => soma + item.valor, 0);
@@ -47,6 +52,7 @@ export default function Index() {
       <ListaGastos gastos={gastos} total={total} aoExcluir={excluirGasto} />
       <Button title="Adicionar Gasto" onPress={() => router.push('/adicionar')} />
       <Button title="Ver Resumo" onPress={() => router.push('/resumo')} />
+      <Button title="Ver Histórico" onPress={() => router.push('/historico')} />
     </View>
   );
 }
@@ -58,4 +64,4 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingHorizontal: 20,
   },
-});
+}); 
