@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { View, TextInput, Button, StyleSheet } from 'react-native';
 import SeletorPagamento from './SeletorPagamento';
 import SeletorData from './SeletorData';
+import SeletorCategoria from './SeletorCategoria';
+import { buscarCategoriasExistentes } from '../utils/categorias';
 
 const FormularioGasto = ({ aoSalvar, gastoInicial, textoBotao = 'Adicionar Gasto' }) => {
   const [descricaoTexto, setDescricaoTexto] = useState('');
@@ -9,6 +11,15 @@ const FormularioGasto = ({ aoSalvar, gastoInicial, textoBotao = 'Adicionar Gasto
   const [categoriaTexto, setCategoriaTexto] = useState('');
   const [formaPagamento, setFormaPagamento] = useState('Dinheiro');
   const [dataGasto, setDataGasto] = useState(Date.now());
+  const [categoriasExistentes, setCategoriasExistentes] = useState([]);
+
+  useEffect(() => {
+    const carregarCategorias = async () => {
+      const categorias = await buscarCategoriasExistentes();
+      setCategoriasExistentes(categorias);
+    };
+    carregarCategorias();
+  }, []);
 
   useEffect(() => {
     if (gastoInicial) {
@@ -22,15 +33,16 @@ const FormularioGasto = ({ aoSalvar, gastoInicial, textoBotao = 'Adicionar Gasto
 
   const handleSalvar = () => {
     const valorNumero = parseFloat(valorTexto) || 0;
+    const categoriaLimpa = categoriaTexto.trim();
 
-    if (descricaoTexto.trim() === '' || categoriaTexto.trim() === '' || valorNumero <= 0) {
+    if (descricaoTexto.trim() === '' || categoriaLimpa === '' || valorNumero <= 0) {
       return;
     }
 
     aoSalvar({
       descricao: descricaoTexto.trim(),
       valor: valorNumero,
-      categoria: categoriaTexto.trim(),
+      categoria: categoriaTexto,
       formaPagamento,
       dataGasto,
     });
@@ -49,6 +61,13 @@ const FormularioGasto = ({ aoSalvar, gastoInicial, textoBotao = 'Adicionar Gasto
       <TextInput style={styles.input} placeholder="Descrição" value={descricaoTexto} onChangeText={setDescricaoTexto} />
       <TextInput style={styles.input} placeholder="Valor" value={valorTexto} onChangeText={setValorTexto} keyboardType="numeric" />
       <TextInput style={styles.input} placeholder="Categoria" value={categoriaTexto} onChangeText={setCategoriaTexto} />
+
+      <SeletorCategoria
+        categorias={categoriasExistentes}
+        valorSelecionado={categoriaTexto}
+        onSelecionar={setCategoriaTexto}
+      />
+
       <SeletorPagamento valorSelecionado={formaPagamento} onSelecionar={setFormaPagamento} />
       <SeletorData dataSelecionada={dataGasto} onSelecionar={setDataGasto} />
       <View style={{ marginTop: 16 }}>
