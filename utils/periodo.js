@@ -1,36 +1,39 @@
-export const inicioDoDia = (data) => {
-    const d = new Date(data);
-    d.setHours(0, 0, 0, 0);
-    return d;
-};
-
-export const calcularIntervalo = (periodo) => {
-    const agora = new Date();
-    let inicio;
-
-    if (periodo === 'semana') {
-        const diaSemana = agora.getDay();
-        inicio = new Date(agora);
-        inicio.setDate(agora.getDate() - diaSemana);
-    } else if (periodo === 'mes') {
-        inicio = new Date(agora.getFullYear(), agora.getMonth(), 1);
-    } else {
-        inicio = new Date(agora.getFullYear(), 0, 1);
-    }
-
-    return { inicio: inicioDoDia(inicio).getTime(), fim: agora.getTime() };
-};
-
-export const filtrarGastosPorPeriodo = (gastos, periodo) => {
-    const { inicio, fim } = calcularIntervalo(periodo);
+export const MESES_PT = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+  ];
+  
+  export const obterAnoMes = (timestamp) => {
+    const data = new Date(timestamp || Date.now());
+    return { ano: data.getFullYear(), mes: data.getMonth() };
+  };
+  
+  export const chaveAnoMes = (ano, mes) => `${ano}-${String(mes).padStart(2, '0')}`;
+  
+  export const labelMes = (ano, mes) => `${MESES_PT[mes]} de ${ano}`;
+  
+  export const filtrarGastosPorMes = (gastos, ano, mes) => {
     return gastos.filter((g) => {
-        const dataReferencia = g.dataGasto || 0;
-        return dataReferencia >= inicio && dataReferencia <= fim;
+      const data = new Date(g.dataGasto || 0);
+      return data.getFullYear() === ano && data.getMonth() === mes;
     });
-};
-
-export const rendaProporcionalAoPeriodo = (rendaMensal, periodo) => {
-    if (periodo === 'semana') return rendaMensal / 4.345;
-    if (periodo === 'ano') return rendaMensal * 12;
-    return rendaMensal;
-};
+  };
+  
+  export const listarMesesComGastos = (gastos) => {
+    const chaves = new Set();
+  
+    gastos.forEach((g) => {
+      const { ano, mes } = obterAnoMes(g.dataGasto);
+      chaves.add(chaveAnoMes(ano, mes));
+    });
+  
+    const atual = obterAnoMes(Date.now());
+    chaves.add(chaveAnoMes(atual.ano, atual.mes));
+  
+    const lista = [...chaves].map((chave) => {
+      const [anoTexto, mesTexto] = chave.split('-');
+      return { ano: parseInt(anoTexto, 10), mes: parseInt(mesTexto, 10) };
+    });
+  
+    return lista.sort((a, b) => (a.ano !== b.ano ? b.ano - a.ano : b.mes - a.mes));
+  };

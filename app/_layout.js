@@ -8,6 +8,8 @@ export default function Layout() {
       <Stack.Screen name="resumo" options={{ title: 'Resumo' }} />
       <Stack.Screen name="detalhe" options={{ title: 'Detalhe' }} />
       <Stack.Screen name="historico" options={{ title: 'Histórico' }} />
+      <Stack.Screen name="estatisticas" options={{ title: 'Estatísticas' }} />
+      <Stack.Screen name="historico-mensal" options={{ title: 'Histórico Mensal' }} />
     </Stack>
   );
 }

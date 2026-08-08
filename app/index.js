@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react';
-import { StyleSheet, View, Button } from 'react-native';
+import { StyleSheet, View, Button, ScrollView } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ListaGastos from '../components/ListaGastos';
+import RendaMensal from '../components/RendaMensal';
 import { registrarEvento } from '../utils/historico';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
@@ -49,19 +50,19 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
+      <RendaMensal />
       <ListaGastos gastos={gastos} total={total} aoExcluir={excluirGasto} />
-      <Button title="Adicionar Gasto" onPress={() => router.push('/adicionar')} />
-      <Button title="Ver Resumo" onPress={() => router.push('/resumo')} />
-      <Button title="Ver Histórico" onPress={() => router.push('/historico')} />
+      <View style={styles.botoes}>
+        <Button title="Adicionar Gasto" onPress={() => router.push('/adicionar')} />
+        <Button title="Ver Resumo" onPress={() => router.push('/resumo')} />
+        <Button title="Ver Estatísticas" onPress={() => router.push('/estatisticas')} />
+        <Button title="Ver Histórico" onPress={() => router.push('/historico')} />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
-}); 
+  container: { flex: 1, backgroundColor: '#fff', paddingTop: 20, paddingHorizontal: 20 },
+  botoes: { gap: 6, marginTop: 10 },
+});
