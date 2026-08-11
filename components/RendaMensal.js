@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { buscarRenda, salvarRenda } from '../utils/renda';
+import { cores, espacamento, tipografia, raio, sombra } from '../constants/theme';
 
-const RendaMensal = () => {
+const RendaMensal = ({ totalGasto = 0, onPress }) => {
   const [renda, setRenda] = useState(0);
   const [editando, setEditando] = useState(false);
   const [textoInput, setTextoInput] = useState('');
@@ -29,7 +31,7 @@ const RendaMensal = () => {
 
   if (editando) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.card, sombra]}>
         <Text style={styles.label}>Renda mensal</Text>
         <View style={styles.linhaEdicao}>
           <TextInput
@@ -38,51 +40,87 @@ const RendaMensal = () => {
             onChangeText={setTextoInput}
             keyboardType="numeric"
             placeholder="0,00"
+            placeholderTextColor="rgba(255,255,255,0.5)"
             autoFocus
           />
-          <Pressable style={styles.botaoSalvar} onPress={confirmarEdicao}>
-            <Text style={styles.botaoSalvarTexto}>Salvar</Text>
+          <Pressable style={styles.botaoSalvar} onPress={confirmarEdicao} hitSlop={8}>
+            <Ionicons name="checkmark" size={20} color={cores.primaria} />
           </Pressable>
         </View>
       </View>
     );
   }
 
+  const percentual = renda > 0 ? (totalGasto / renda) * 100 : 0;
+  const percentualVisual = Math.min(percentual, 100);
+
   return (
-    <Pressable style={styles.container} onPress={iniciarEdicao}>
-      <Text style={styles.label}>Renda mensal</Text>
+    <Pressable style={[styles.card, sombra]} onPress={onPress}>
+      <View style={styles.linhaTopo}>
+        <Text style={styles.label}>Renda mensal</Text>
+        <Pressable onPress={iniciarEdicao} hitSlop={10} style={styles.botaoLapis}>
+          <Ionicons name="pencil" size={13} color="rgba(255,255,255,0.85)" />
+        </Pressable>
+      </View>
+
       <Text style={styles.valor}>
-        {renda > 0 ? `R$ ${renda.toFixed(2)}` : 'Toque para definir'}
+        {renda > 0 ? `R$ ${renda.toFixed(2)}` : 'Toque no lápis para definir'}
       </Text>
+
+      {renda > 0 && (
+        <>
+          <View style={styles.barraTrack}>
+            <View style={[styles.barraFill, { width: `${percentualVisual}%` }]} />
+          </View>
+          <View style={styles.rodape}>
+            <Text style={styles.rodapeTexto}>R$ {totalGasto.toFixed(2)} gastos</Text>
+            <Text style={styles.rodapeTexto}>{percentual.toFixed(0)}%</Text>
+          </View>
+        </>
+      )}
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#f5f7fa',
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 16,
+  card: {
+    backgroundColor: cores.primaria,
+    borderRadius: raio.xl,
+    padding: espacamento.lg,
+    marginBottom: espacamento.lg,
   },
-  label: { fontSize: 13, color: '#888' },
-  valor: { fontSize: 20, fontWeight: 'bold', marginTop: 4 },
-  linhaEdicao: { flexDirection: 'row', gap: 8, marginTop: 6, alignItems: 'center' },
+  linhaTopo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  label: { ...tipografia.caption, color: 'rgba(255,255,255,0.85)' },
+  botaoLapis: { padding: 4 },
+  valor: { ...tipografia.h1, color: cores.branco, marginTop: 4 },
+  barraTrack: {
+    height: 6,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    borderRadius: raio.pill,
+    marginTop: espacamento.md,
+    overflow: 'hidden',
+  },
+  barraFill: { height: '100%', backgroundColor: cores.branco, borderRadius: raio.pill },
+  rodape: { flexDirection: 'row', justifyContent: 'space-between', marginTop: espacamento.xs },
+  rodapeTexto: { fontSize: 11, color: 'rgba(255,255,255,0.85)' },
+  linhaEdicao: { flexDirection: 'row', gap: espacamento.sm, marginTop: espacamento.sm, alignItems: 'center' },
   input: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 8,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: raio.sm,
+    padding: espacamento.sm,
+    color: cores.branco,
+    fontSize: 16,
+    fontWeight: '700',
   },
   botaoSalvar: {
-    backgroundColor: '#4a90d9',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    width: 36,
+    height: 36,
+    borderRadius: raio.sm,
+    backgroundColor: cores.branco,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  botaoSalvarTexto: { color: '#fff', fontWeight: 'bold' },
 });
 
 export default RendaMensal;

@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
+import { cores, espacamento, tipografia, raio } from '../constants/theme';
 
 const BarraOrcamento = ({ totalGasto, rendaReferencia }) => {
   if (rendaReferencia <= 0) {
@@ -12,15 +13,15 @@ const BarraOrcamento = ({ totalGasto, rendaReferencia }) => {
   const percentual = (totalGasto / rendaReferencia) * 100;
   const percentualVisual = Math.min(percentual, 100);
 
-  let cor = '#2ecc71';
-  if (percentual >= 70) cor = '#f39c12';
-  if (percentual >= 100) cor = '#e74c3c';
+  let cor = cores.sucesso;
+  if (percentual >= 70) cor = cores.alerta;
+  if (percentual >= 100) cor = cores.perigo;
 
   return (
     <View style={styles.container}>
       <View style={styles.linhaTextos}>
         <Text style={styles.gasto}>R$ {totalGasto.toFixed(2)} gastos</Text>
-        <Text style={styles.percentual}>{percentual.toFixed(0)}%</Text>
+        <Text style={[styles.percentual, { color: cor }]}>{percentual.toFixed(0)}%</Text>
       </View>
       <View style={styles.barraFundo}>
         <View style={[styles.barraPreenchida, { width: `${percentualVisual}%`, backgroundColor: cor }]} />
@@ -31,22 +32,19 @@ const BarraOrcamento = ({ totalGasto, rendaReferencia }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { marginBottom: 20 },
-  aviso: { color: '#888', fontSize: 14 },
-  linhaTextos: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  gasto: { fontSize: 15, fontWeight: 'bold' },
-  percentual: { fontSize: 15, fontWeight: 'bold' },
+  container: { marginBottom: espacamento.xl },
+  aviso: { ...tipografia.body, color: cores.textoSecundario },
+  linhaTextos: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: espacamento.xs },
+  gasto: { ...tipografia.bodyBold, color: cores.textoPrimario },
+  percentual: { ...tipografia.bodyBold },
   barraFundo: {
-    height: 14,
-    backgroundColor: '#eee',
-    borderRadius: 7,
+    height: 8,
+    backgroundColor: cores.primariaClara,
+    borderRadius: raio.pill,
     overflow: 'hidden',
   },
-  barraPreenchida: {
-    height: '100%',
-    borderRadius: 7,
-  },
-  referencia: { fontSize: 12, color: '#888', marginTop: 4 },
+  barraPreenchida: { height: '100%', borderRadius: raio.pill },
+  referencia: { ...tipografia.caption, color: cores.textoTerciario, marginTop: espacamento.xs },
 });
 
 export default BarraOrcamento;

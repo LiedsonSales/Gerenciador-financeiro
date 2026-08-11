@@ -7,3 +7,8 @@ export const formatarData = (timestamps) => {
     });
     return `${dataFormatada} às ${horaFormatada}`;
 };
+
+export const formatarHora = (timestamp) => {
+    const data = new Date(timestamp);
+    return data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+};

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FormularioGasto from '../components/FormularioGasto';
 import { registrarEvento } from '../utils/historico';
+import { cores, espacamento } from '../constants/theme';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
@@ -37,9 +38,7 @@ export default function Adicionar() {
 
       let novaLista;
       if (id) {
-        novaLista = gastosAtuais.map((g) =>
-          g.id === id ? { ...g, ...dadosGasto } : g
-        );
+        novaLista = gastosAtuais.map((g) => (g.id === id ? { ...g, ...dadosGasto } : g));
       } else {
         novaLista = [...gastosAtuais, { id: Date.now().toString(), ...dadosGasto }];
         await registrarEvento('adicionado', dadosGasto);
@@ -54,28 +53,25 @@ export default function Adicionar() {
 
   if (carregando) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" />
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color={cores.primaria} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.conteudo}>
       <FormularioGasto
         aoSalvar={salvarGasto}
         gastoInicial={gastoParaEditar}
         textoBotao={id ? 'Salvar Alterações' : 'Adicionar Gasto'}
       />
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
+  container: { flex: 1, backgroundColor: cores.fundo },
+  conteudo: { padding: espacamento.xl, paddingBottom: espacamento.xxxl },
+  loading: { flex: 1, backgroundColor: cores.fundo, alignItems: 'center', justifyContent: 'center' },
 });

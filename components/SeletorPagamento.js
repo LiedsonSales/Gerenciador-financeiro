@@ -1,4 +1,5 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { cores, espacamento, tipografia, raio } from '../constants/theme';
 
 const OPCOES = ['Dinheiro', 'Débito', 'Crédito'];
 
@@ -13,9 +14,7 @@ const SeletorPagamento = ({ valorSelecionado, onSelecionar }) => {
             onPress={() => onSelecionar(opcao)}
             style={[styles.botao, selecionado && styles.botaoSelecionado]}
           >
-            <Text style={[styles.texto, selecionado && styles.textoSelecionado]}>
-              {opcao}
-            </Text>
+            <Text style={[styles.texto, selecionado && styles.textoSelecionado]}>{opcao}</Text>
           </Pressable>
         );
       })}
@@ -24,31 +23,19 @@ const SeletorPagamento = ({ valorSelecionado, onSelecionar }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-    gap: 8,
-  },
+  container: { flexDirection: 'row', marginTop: espacamento.sm, gap: espacamento.sm },
   botao: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: espacamento.sm + 2,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
+    borderColor: cores.borda,
+    borderRadius: raio.sm,
     alignItems: 'center',
+    backgroundColor: cores.superficie,
   },
-  botaoSelecionado: {
-    backgroundColor: '#4a90d9',
-    borderColor: '#4a90d9',
-  },
-  texto: {
-    color: '#333',
-  },
-  textoSelecionado: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
+  botaoSelecionado: { backgroundColor: cores.primaria, borderColor: cores.primaria },
+  texto: { ...tipografia.body, color: cores.textoSecundario },
+  textoSelecionado: { color: cores.branco, fontWeight: '700' },
 });
 
 export default SeletorPagamento;

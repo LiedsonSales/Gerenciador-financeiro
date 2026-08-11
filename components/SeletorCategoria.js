@@ -1,25 +1,24 @@
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { cores, espacamento, tipografia, raio } from '../constants/theme';
 
 const SeletorCategoria = ({ categorias, valorSelecionado, onSelecionar }) => {
-  if (categorias.length === 0) {
-    return null;
-  }
+  if (categorias.length === 0) return null;
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Categorias já usadas</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {categorias.map((categoria) => {
-          const selecionada = valorSelecionado.trim().toLowerCase().normalize('NFC') === categoria.trim().toLowerCase().normalize('NFC');
+          const selecionada =
+            valorSelecionado.trim().toLowerCase().normalize('NFC') ===
+            categoria.trim().toLowerCase().normalize('NFC');
           return (
             <Pressable
               key={categoria}
               onPress={() => onSelecionar(categoria)}
               style={[styles.chip, selecionada && styles.chipSelecionado]}
             >
-              <Text style={[styles.texto, selecionada && styles.textoSelecionado]}>
-                {categoria}
-              </Text>
+              <Text style={[styles.texto, selecionada && styles.textoSelecionado]}>{categoria}</Text>
             </Pressable>
           );
         })}
@@ -29,28 +28,20 @@ const SeletorCategoria = ({ categorias, valorSelecionado, onSelecionar }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { marginTop: 8 },
-  label: { fontSize: 13, color: '#888', marginBottom: 6 },
+  container: { marginTop: espacamento.sm },
+  label: { ...tipografia.caption, color: cores.textoTerciario, marginBottom: espacamento.xs },
   chip: {
     paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 20,
+    paddingHorizontal: espacamento.md,
+    borderRadius: raio.pill,
     borderWidth: 1,
-    borderColor: '#ccc',
-    marginRight: 8,
+    borderColor: cores.borda,
+    marginRight: espacamento.xs,
+    backgroundColor: cores.superficie,
   },
-  chipSelecionado: {
-    backgroundColor: '#4a90d9',
-    borderColor: '#4a90d9',
-  },
-  texto: {
-    color: '#333',
-    fontSize: 14,
-  },
-  textoSelecionado: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
+  chipSelecionado: { backgroundColor: cores.primaria, borderColor: cores.primaria },
+  texto: { color: cores.textoSecundario, fontSize: 13 },
+  textoSelecionado: { color: cores.branco, fontWeight: '700' },
 });
 
 export default SeletorCategoria;

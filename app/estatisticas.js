@@ -6,6 +6,7 @@ import { buscarRenda } from '../utils/renda';
 import { filtrarGastosPorMes, obterAnoMes } from '../utils/periodo';
 import SeletorMes from '../components/SeletorMes';
 import BarraOrcamento from '../components/BarraOrcamento';
+import { cores, espacamento, tipografia, raio } from '../constants/theme';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
@@ -19,9 +20,7 @@ const agruparPorCampo = (gastos, campo) => {
 };
 
 const paraListaOrdenada = (agrupado) =>
-  Object.entries(agrupado)
-    .map(([chave, valor]) => ({ chave, valor }))
-    .sort((a, b) => b.valor - a.valor);
+  Object.entries(agrupado).map(([chave, valor]) => ({ chave, valor })).sort((a, b) => b.valor - a.valor);
 
 export default function Estatisticas() {
   const params = useLocalSearchParams();
@@ -39,8 +38,7 @@ export default function Estatisticas() {
         try {
           const dados = await AsyncStorage.getItem(CHAVE_ARMAZENAMENTO);
           setTodosGastos(dados ? JSON.parse(dados) : []);
-          const valorRenda = await buscarRenda();
-          setRenda(valorRenda);
+          setRenda(await buscarRenda());
         } catch (erro) {
           console.log('Erro ao carregar estatísticas:', erro);
         }
@@ -59,16 +57,16 @@ export default function Estatisticas() {
   };
 
   const podeAvancar = ano < atual.ano || (ano === atual.ano && mes < atual.mes);
-
   const gastosDoMes = filtrarGastosPorMes(todosGastos, ano, mes);
   const totalDoMes = gastosDoMes.reduce((soma, item) => soma + item.valor, 0);
-
   const listaCategorias = paraListaOrdenada(agruparPorCampo(gastosDoMes, 'categoria'));
   const listaPagamentos = paraListaOrdenada(agruparPorCampo(gastosDoMes, 'formaPagamento'));
 
   const irParaDetalhe = (tipo, valor) => {
     router.push({ pathname: '/detalhe', params: { tipo, valor } });
   };
+
+  const maiorValor = Math.max(...listaCategorias.map((i) => i.valor), 1);
 
   const renderRanking = (titulo, lista, tipo) => (
     <View style={styles.secao}>
@@ -78,9 +76,14 @@ export default function Estatisticas() {
       ) : (
         lista.map((item, index) => (
           <Pressable key={item.chave} style={styles.linha} onPress={() => irParaDetalhe(tipo, item.chave)}>
-            <Text style={styles.posicao}>{index + 1}º</Text>
-            <Text style={styles.nomeItem}>{item.chave}</Text>
-            <Text style={styles.valorItem}>R$ {item.valor.toFixed(2)}</Text>
+            <View style={styles.posicao}>
+              <Text style={styles.posicaoTexto}>{index + 1}º</Text>
+            </View>
+            <Text style={styles.nomeItem} numberOfLines={1}>{item.chave}</Text>
+            <View style={styles.barraTrack}>
+              <View style={[styles.barraFill, { width: `${(item.valor / maiorValor) * 100}%` }]} />
+            </View>
+            <Text style={styles.valorItem}>R$ {item.valor.toFixed(0)}</Text>
           </Pressable>
         ))
       )}
@@ -89,8 +92,11 @@ export default function Estatisticas() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.conteudo}>
+      <Text style={styles.titulo}>Estatísticas</Text>
       <SeletorMes ano={ano} mes={mes} onMudarMes={mudarMes} podeAvancar={podeAvancar} />
-      <BarraOrcamento totalGasto={totalDoMes} rendaReferencia={renda} />
+      <View style={styles.cardOrcamento}>
+        <BarraOrcamento totalGasto={totalDoMes} rendaReferencia={renda} />
+      </View>
       {renderRanking('Por Categoria', listaCategorias, 'categoria')}
       {renderRanking('Por Forma de Pagamento', listaPagamentos, 'formaPagamento')}
       <Pressable style={styles.botaoHistorico} onPress={() => router.push('/historico-mensal')}>
@@ -101,29 +107,33 @@ export default function Estatisticas() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  conteudo: { paddingTop: 20, paddingHorizontal: 20, paddingBottom: 40 },
-  secao: { marginBottom: 20 },
-  subtitulo: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
-  vazio: { color: '#888' },
-  linha: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  posicao: { fontSize: 14, color: '#888', width: 24 },
-  nomeItem: { fontSize: 16, flex: 1 },
-  valorItem: { fontSize: 16, fontWeight: 'bold' },
-  botaoHistorico: {
-    marginTop: 10,
-    paddingVertical: 12,
+  container: { flex: 1, backgroundColor: cores.fundo },
+  conteudo: { paddingTop: espacamento.xxl, paddingHorizontal: espacamento.xl, paddingBottom: espacamento.xxxl },
+  titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
+  cardOrcamento: {
+    backgroundColor: cores.superficie,
     borderWidth: 1,
-    borderColor: '#4a90d9',
-    borderRadius: 8,
-    alignItems: 'center',
+    borderColor: cores.borda,
+    borderRadius: raio.lg,
+    padding: espacamento.lg,
+    marginBottom: espacamento.xl,
   },
-  botaoHistoricoTexto: { color: '#4a90d9', fontWeight: 'bold' },
+  secao: { marginBottom: espacamento.xl },
+  subtitulo: { ...tipografia.h2, color: cores.textoPrimario, marginBottom: espacamento.sm },
+  vazio: { ...tipografia.body, color: cores.textoSecundario },
+  linha: { flexDirection: 'row', alignItems: 'center', gap: espacamento.sm, paddingVertical: espacamento.sm },
+  posicao: {
+    width: 22, height: 22, borderRadius: raio.sm,
+    backgroundColor: cores.primariaClara, alignItems: 'center', justifyContent: 'center',
+  },
+  posicaoTexto: { fontSize: 11, fontWeight: '700', color: cores.primariaEscura },
+  nomeItem: { ...tipografia.body, color: cores.textoPrimario, width: 100 },
+  barraTrack: { flex: 1, height: 5, backgroundColor: cores.primariaClara, borderRadius: raio.pill, overflow: 'hidden' },
+  barraFill: { height: '100%', backgroundColor: cores.primaria, borderRadius: raio.pill },
+  valorItem: { ...tipografia.bodyBold, color: cores.textoPrimario, width: 66, textAlign: 'right' },
+  botaoHistorico: {
+    borderWidth: 1, borderColor: cores.primaria, borderRadius: raio.sm,
+    paddingVertical: espacamento.md, alignItems: 'center', marginTop: espacamento.sm,
+  },
+  botaoHistoricoTexto: { color: cores.primaria, fontWeight: '700' },
 });

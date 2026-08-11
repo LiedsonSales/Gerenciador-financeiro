@@ -1,10 +1,14 @@
 import { useState, useCallback } from 'react';
-import { StyleSheet, View, Button, ScrollView } from 'react-native';
+import { StyleSheet, View, Pressable, Text } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ListaGastos from '../components/ListaGastos';
+import ListaGastosAgrupada from '../components/ListaGastosAgrupada';
 import RendaMensal from '../components/RendaMensal';
+import BotaoIcone from '../components/BotaoIcone';
 import { registrarEvento } from '../utils/historico';
+import { filtrarGastosRecentes } from '../utils/periodo';
+import { cores, espacamento, tipografia } from '../constants/theme';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
@@ -47,22 +51,55 @@ export default function Index() {
   };
 
   const total = gastos.reduce((soma, item) => soma + item.valor, 0);
+  const secoesRecentes = filtrarGastosRecentes(gastos);
 
   return (
     <View style={styles.container}>
-      <RendaMensal />
-      <ListaGastos gastos={gastos} total={total} aoExcluir={excluirGasto} />
-      <View style={styles.botoes}>
-        <Button title="Adicionar Gasto" onPress={() => router.push('/adicionar')} />
-        <Button title="Ver Resumo" onPress={() => router.push('/resumo')} />
-        <Button title="Ver Estatísticas" onPress={() => router.push('/estatisticas')} />
-        <Button title="Ver Histórico" onPress={() => router.push('/historico')} />
+      <View style={styles.header}>
+        <Text style={styles.titulo}>Meus Gastos</Text>
+        <Pressable style={styles.fab} onPress={() => router.push('/adicionar')} hitSlop={8}>
+          <Ionicons name="add" size={22} color={cores.branco} />
+        </Pressable>
       </View>
+
+      <RendaMensal totalGasto={total} onPress={() => router.push('/estatisticas')} />
+
+      <View style={styles.botoesRapidos}>
+        <BotaoIcone icone="pie-chart" onPress={() => router.push('/resumo')} />
+        <BotaoIcone icone="albums" onPress={() => router.push('/todos-gastos')} />
+        <BotaoIcone icone="time" onPress={() => router.push('/historico')} />
+      </View>
+
+      <ListaGastosAgrupada
+        secoes={secoesRecentes}
+        apenasHora
+        onEditar={(id) => router.push({ pathname: '/adicionar', params: { id } })}
+        onExcluir={excluirGasto}
+        textoVazio="Nenhum gasto hoje ou ontem."
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', paddingTop: 20, paddingHorizontal: 20 },
-  botoes: { gap: 6, marginTop: 10 },
+  container: { flex: 1, backgroundColor: cores.fundo, paddingHorizontal: espacamento.xl },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: espacamento.xxxl,
+    marginBottom: espacamento.lg,
+  },
+  titulo: { ...tipografia.h1, color: cores.textoPrimario, letterSpacing: -0.4 },
+  fab: {
+    width: 40, height: 40, borderRadius: 12, backgroundColor: cores.primaria,
+    alignItems: 'center', justifyContent: 'center',
+    shadowColor: cores.primaria, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 4,
+  },
+  botoesRapidos: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: espacamento.xl,
+    marginBottom: espacamento.lg,
+  },
 });

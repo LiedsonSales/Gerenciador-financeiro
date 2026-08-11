@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import SeletorPagamento from './SeletorPagamento';
 import SeletorData from './SeletorData';
 import SeletorCategoria from './SeletorCategoria';
 import { buscarCategoriasExistentes } from '../utils/categorias';
+import { cores, espacamento, tipografia, raio, sombra } from '../constants/theme';
 
 const FormularioGasto = ({ aoSalvar, gastoInicial, textoBotao = 'Adicionar Gasto' }) => {
   const [descricaoTexto, setDescricaoTexto] = useState('');
@@ -35,14 +36,12 @@ const FormularioGasto = ({ aoSalvar, gastoInicial, textoBotao = 'Adicionar Gasto
     const valorNumero = parseFloat(valorTexto) || 0;
     const categoriaLimpa = categoriaTexto.trim();
 
-    if (descricaoTexto.trim() === '' || categoriaLimpa === '' || valorNumero <= 0) {
-      return;
-    }
+    if (descricaoTexto.trim() === '' || categoriaLimpa === '' || valorNumero <= 0) return;
 
     aoSalvar({
       descricao: descricaoTexto.trim(),
       valor: valorNumero,
-      categoria: categoriaTexto,
+      categoria: categoriaLimpa,
       formaPagamento,
       dataGasto,
     });
@@ -58,34 +57,45 @@ const FormularioGasto = ({ aoSalvar, gastoInicial, textoBotao = 'Adicionar Gasto
 
   return (
     <View>
-      <TextInput style={styles.input} placeholder="Descrição" value={descricaoTexto} onChangeText={setDescricaoTexto} />
-      <TextInput style={styles.input} placeholder="Valor" value={valorTexto} onChangeText={setValorTexto} keyboardType="numeric" />
-      <TextInput style={styles.input} placeholder="Categoria" value={categoriaTexto} onChangeText={setCategoriaTexto} />
+      <Text style={styles.label}>Descrição</Text>
+      <TextInput style={styles.input} placeholder="Ex: Lanche" placeholderTextColor={cores.textoTerciario} value={descricaoTexto} onChangeText={setDescricaoTexto} />
 
-      <SeletorCategoria
-        categorias={categoriasExistentes}
-        valorSelecionado={categoriaTexto}
-        onSelecionar={setCategoriaTexto}
-      />
+      <Text style={styles.label}>Valor</Text>
+      <TextInput style={styles.input} placeholder="0,00" placeholderTextColor={cores.textoTerciario} value={valorTexto} onChangeText={setValorTexto} keyboardType="numeric" />
 
+      <Text style={styles.label}>Categoria</Text>
+      <TextInput style={styles.input} placeholder="Ex: Alimentação" placeholderTextColor={cores.textoTerciario} value={categoriaTexto} onChangeText={setCategoriaTexto} />
+
+      <SeletorCategoria categorias={categoriasExistentes} valorSelecionado={categoriaTexto} onSelecionar={setCategoriaTexto} />
       <SeletorPagamento valorSelecionado={formaPagamento} onSelecionar={setFormaPagamento} />
       <SeletorData dataSelecionada={dataGasto} onSelecionar={setDataGasto} />
-      <View style={{ marginTop: 16 }}>
-        <Button title={textoBotao} onPress={handleSalvar} />
-      </View>
+
+      <Pressable style={[styles.botaoSalvar, sombra]} onPress={handleSalvar}>
+        <Text style={styles.botaoSalvarTexto}>{textoBotao}</Text>
+      </Pressable>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  label: { ...tipografia.caption, color: cores.textoTerciario, marginTop: espacamento.md, marginBottom: espacamento.xs },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 10,
-    width: '100%',
-    marginTop: 10,
+    borderColor: cores.borda,
+    borderRadius: raio.sm,
+    padding: espacamento.md,
+    backgroundColor: cores.superficie,
+    fontSize: 15,
+    color: cores.textoPrimario,
   },
+  botaoSalvar: {
+    backgroundColor: cores.primaria,
+    borderRadius: raio.sm,
+    paddingVertical: espacamento.md,
+    alignItems: 'center',
+    marginTop: espacamento.xl,
+  },
+  botaoSalvarTexto: { color: cores.branco, fontWeight: '700', fontSize: 15 },
 });
 
 export default FormularioGasto;

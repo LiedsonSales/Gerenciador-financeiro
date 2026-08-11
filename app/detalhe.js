@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, FlatList } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ItemGasto from '../components/ItemGasto';
+import { cores, espacamento, tipografia } from '../constants/theme';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
@@ -16,8 +17,7 @@ export default function Detalhe() {
         try {
           const dados = await AsyncStorage.getItem(CHAVE_ARMAZENAMENTO);
           const todos = dados ? JSON.parse(dados) : [];
-          const filtrados = todos.filter((g) => g[tipo] === valor);
-          setGastosFiltrados(filtrados);
+          setGastosFiltrados(todos.filter((g) => g[tipo] === valor));
         } catch (erro) {
           console.log('Erro ao carregar detalhe:', erro);
         }
@@ -31,6 +31,7 @@ export default function Detalhe() {
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: valor }} />
+      <Text style={styles.titulo}>{valor}</Text>
       <FlatList
         data={gastosFiltrados}
         keyExtractor={(item, index) => item.id ?? index.toString()}
@@ -43,16 +44,17 @@ export default function Detalhe() {
             dataGasto={item.dataGasto}
           />
         )}
-        ListHeaderComponent={<Text style={styles.titulo}>{valor}</Text>}
         ListFooterComponent={<Text style={styles.total}>Total: R$ {total.toFixed(2)}</Text>}
-        ListEmptyComponent={<Text>Nenhum gasto encontrado.</Text>}
+        ListEmptyComponent={<Text style={styles.vazio}>Nenhum gasto encontrado.</Text>}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', paddingTop: 20, paddingHorizontal: 20 },
-  titulo: { fontSize: 22, fontWeight: 'bold', marginBottom: 20 },
-  total: { fontSize: 18, fontWeight: 'bold', marginTop: 15 },
+  container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxl, paddingHorizontal: espacamento.xl },
+  titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
+  total: { ...tipografia.h2, color: cores.textoPrimario, marginTop: espacamento.sm, textAlign: 'right' },
+  vazio: { ...tipografia.body, color: cores.textoSecundario, textAlign: 'center', marginTop: espacamento.xl },
 });

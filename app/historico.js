@@ -4,6 +4,7 @@ import { useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { carregarHistorico } from '../utils/historico';
 import { formatarData } from '../utils/formatarData';
+import { cores, espacamento, tipografia, raio } from '../constants/theme';
 
 export default function Historico() {
   const [eventos, setEventos] = useState([]);
@@ -11,78 +12,68 @@ export default function Historico() {
 
   useFocusEffect(
     useCallback(() => {
-      const carregar = async () => {
-        const dados = await carregarHistorico();
-        setEventos(dados);
-      };
+      const carregar = async () => setEventos(await carregarHistorico());
       carregar();
     }, [])
   );
 
   const eventosOrdenados = [...eventos].sort((a, b) =>
-    ordem === 'recentes'
-      ? b.dataEvento - a.dataEvento
-      : a.dataEvento - b.dataEvento
+    ordem === 'recentes' ? b.dataEvento - a.dataEvento : a.dataEvento - b.dataEvento
   );
-
-  const alternarOrdem = () => {
-    setOrdem(ordem === 'recentes' ? 'antigos' : 'recentes');
-  };
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.botaoOrdem} onPress={alternarOrdem}>
+      <Text style={styles.titulo}>Histórico</Text>
+      <Pressable style={styles.botaoOrdem} onPress={() => setOrdem(ordem === 'recentes' ? 'antigos' : 'recentes')}>
+        <Ionicons name="swap-vertical" size={15} color={cores.primaria} />
         <Text style={styles.botaoOrdemTexto}>
-          Ordenar: {ordem === 'recentes' ? 'Mais recentes primeiro' : 'Mais antigos primeiro'}
+          {ordem === 'recentes' ? 'Mais recentes primeiro' : 'Mais antigos primeiro'}
         </Text>
       </Pressable>
 
       <FlatList
         data={eventosOrdenados}
         keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <View style={styles.linha}>
-            <Ionicons
-              name={item.tipo === 'adicionado' ? 'add-circle' : 'remove-circle'}
-              size={22}
-              color={item.tipo === 'adicionado' ? '#2ecc71' : '#e74c3c'}
-            />
+            <View style={[styles.iconeContainer, { backgroundColor: item.tipo === 'adicionado' ? '#E9F9F0' : '#FDECEC' }]}>
+              <Ionicons
+                name={item.tipo === 'adicionado' ? 'add' : 'remove'}
+                size={16}
+                color={item.tipo === 'adicionado' ? cores.sucesso : cores.perigo}
+              />
+            </View>
             <View style={styles.info}>
               <Text style={styles.descricao}>
                 {item.tipo === 'adicionado' ? 'Adicionado' : 'Removido'}: {item.descricao}
               </Text>
-              <Text style={styles.detalhe}>
-                R$ {item.valor.toFixed(2)} · {formatarData(item.dataEvento)}
-              </Text>
+              <Text style={styles.detalhe}>R$ {item.valor.toFixed(2)} · {formatarData(item.dataEvento)}</Text>
             </View>
           </View>
         )}
-        ListEmptyComponent={<Text>Nenhum evento registrado ainda.</Text>}
+        ListEmptyComponent={<Text style={styles.vazio}>Nenhum evento registrado ainda.</Text>}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', paddingTop: 20, paddingHorizontal: 20 },
+  container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxl, paddingHorizontal: espacamento.xl },
+  titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
   botaoOrdem: {
-    paddingVertical: 10,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#4a90d9',
-    borderRadius: 8,
-    alignItems: 'center',
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: espacamento.xs,
+    paddingVertical: espacamento.sm + 2, marginBottom: espacamento.lg,
+    borderWidth: 1, borderColor: cores.borda, borderRadius: raio.sm, backgroundColor: cores.superficie,
   },
-  botaoOrdemTexto: { color: '#4a90d9', fontWeight: 'bold' },
+  botaoOrdemTexto: { color: cores.primaria, fontWeight: '600', fontSize: 13 },
   linha: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    flexDirection: 'row', alignItems: 'center', gap: espacamento.sm,
+    paddingVertical: espacamento.sm + 2, borderBottomWidth: 1, borderBottomColor: cores.borda,
   },
+  iconeContainer: { width: 30, height: 30, borderRadius: raio.sm, alignItems: 'center', justifyContent: 'center' },
   info: { flex: 1 },
-  descricao: { fontSize: 15 },
-  detalhe: { fontSize: 13, color: '#888', marginTop: 2 },
+  descricao: { ...tipografia.body, color: cores.textoPrimario },
+  detalhe: { ...tipografia.caption, color: cores.textoSecundario, marginTop: 1 },
+  vazio: { ...tipografia.body, color: cores.textoSecundario, textAlign: 'center', marginTop: espacamento.xl },
 });

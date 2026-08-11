@@ -1,27 +1,44 @@
 import { Text, View, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { formatarData } from '../utils/formatarData';
+import { formatarData, formatarHora } from '../utils/formatarData';
+import { cores, espacamento, tipografia, raio } from '../constants/theme';
 
-const ItemGasto = ({ descricao, valor, categoria, formaPagamento, dataGasto, onEditar, onExcluir }) => {
+const ICONES_CATEGORIA = {
+  Alimentação: 'fast-food',
+  Transporte: 'car',
+  Saúde: 'medkit',
+  Lazer: 'game-controller',
+};
+
+const ItemGasto = ({ descricao, valor, categoria, formaPagamento, dataGasto, apenasHora, onEditar, onExcluir }) => {
+  const nomeIcone = ICONES_CATEGORIA[categoria] || 'pricetag';
+  const textoData = dataGasto ? (apenasHora ? formatarHora(dataGasto) : formatarData(dataGasto)) : '';
+
   return (
     <View style={styles.linha}>
-      <View style={styles.info}>
-        <Text style={styles.descricao}>{descricao} ({categoria})</Text>
-        {formaPagamento ? <Text style={styles.detalhe}>{formaPagamento}</Text> : null}
-        {dataGasto ? <Text style={styles.detalhe}>{formatarData(dataGasto)}</Text> : null}
-        <Text style={styles.valor}>R$ {valor.toFixed(2)}</Text>
+      <View style={styles.iconeContainer}>
+        <Ionicons name={nomeIcone} size={17} color={cores.primaria} />
       </View>
+
+      <View style={styles.info}>
+        <Text style={styles.descricao} numberOfLines={1}>{descricao}</Text>
+        <Text style={styles.detalhe} numberOfLines={1}>
+          {categoria}{formaPagamento ? ` · ${formaPagamento}` : ''}{textoData ? ` · ${textoData}` : ''}
+        </Text>
+      </View>
+
+      <Text style={styles.valor}>R$ {valor.toFixed(2)}</Text>
 
       {(onEditar || onExcluir) && (
         <View style={styles.acoes}>
           {onEditar && (
             <Pressable onPress={onEditar} style={styles.botaoIcone} hitSlop={8}>
-              <Ionicons name="pencil" size={20} color="#4a90d9" />
+              <Ionicons name="pencil" size={16} color={cores.textoSecundario} />
             </Pressable>
           )}
           {onExcluir && (
             <Pressable onPress={onExcluir} style={styles.botaoIcone} hitSlop={8}>
-              <Ionicons name="trash" size={20} color="#e74c3c" />
+              <Ionicons name="trash" size={16} color={cores.perigo} />
             </Pressable>
           )}
         </View>
@@ -32,19 +49,19 @@ const ItemGasto = ({ descricao, valor, categoria, formaPagamento, dataGasto, onE
 
 const styles = StyleSheet.create({
   linha: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    flexDirection: 'row', alignItems: 'center', backgroundColor: cores.superficie,
+    borderRadius: raio.lg, borderWidth: 1, borderColor: cores.borda,
+    padding: espacamento.md, marginBottom: espacamento.sm, gap: espacamento.sm,
   },
-  info: { flex: 1 },
-  descricao: { fontSize: 16 },
-  detalhe: { fontSize: 13, color: '#888', marginTop: 2 },
-  valor: { fontSize: 16, fontWeight: 'bold', marginTop: 2 },
-  acoes: { flexDirection: 'row', gap: 14 },
+  iconeContainer: {
+    width: 38, height: 38, borderRadius: raio.md, backgroundColor: cores.primariaClara,
+    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+  },
+  info: { flex: 1, minWidth: 0 },
+  descricao: { ...tipografia.bodyBold, color: cores.textoPrimario },
+  detalhe: { ...tipografia.caption, color: cores.textoSecundario, marginTop: 2 },
+  valor: { ...tipografia.bodyBold, color: cores.textoPrimario, marginLeft: espacamento.sm },
+  acoes: { flexDirection: 'row', gap: espacamento.xs, marginLeft: espacamento.sm },
   botaoIcone: { padding: 4 },
 });
 

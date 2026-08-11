@@ -8,10 +8,19 @@ export const buscarCategoriasExistentes = async () => {
     const gastos = dados ? JSON.parse(dados) : [];
 
     const categorias = gastos
-      .map((g) => g.categoria)
-      .filter((categoria) => categoria && categoria.trim() !== '');
+      .map((g) => (g.categoria || '').trim())
+      .filter((categoria) => categoria !== '');
 
-    const categoriasUnicas = [...new Set(categorias)];
+    const vistos = new Set();
+    const categoriasUnicas = [];
+
+    categorias.forEach((categoria) => {
+      const chave = categoria.toLowerCase().normalize('NFC');
+      if (!vistos.has(chave)) {
+        vistos.add(chave);
+        categoriasUnicas.push(categoria);
+      }
+    });
 
     return categoriasUnicas.sort((a, b) => a.localeCompare(b));
   } catch (erro) {
