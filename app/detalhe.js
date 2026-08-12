@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react';
-import { StyleSheet, View, Text, FlatList } from 'react-native';
-import { useFocusEffect, useLocalSearchParams, Stack } from 'expo-router';
+import { StyleSheet, View, Text, FlatList, Alert } from 'react-native';
+import { useFocusEffect, useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ItemGasto from '../components/ItemGasto';
+import { registrarEvento } from '../utils/historico';
 import { cores, espacamento, tipografia } from '../constants/theme';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
@@ -10,6 +11,7 @@ const CHAVE_ARMAZENAMENTO = 'gastos';
 export default function Detalhe() {
   const { tipo, valor } = useLocalSearchParams();
   const [gastosFiltrados, setGastosFiltrados] = useState([]);
+  const router = useRouter();
 
   useFocusEffect(
     useCallback(() => {
@@ -26,6 +28,37 @@ export default function Detalhe() {
     }, [tipo, valor])
   );
 
+  const confirmarExclusao = (id) => {
+    Alert.alert(
+      'Excluir gasto',
+      'Tem certeza que deseja excluir este gasto?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const dados = await AsyncStorage.getItem(CHAVE_ARMAZENAMENTO);
+              const todos = dados ? JSON.parse(dados) : [];
+              const gastoRemovido = todos.find((g) => g.id === id);
+              const novaListaCompleta = todos.filter((g) => g.id !== id);
+
+              await AsyncStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(novaListaCompleta));
+              setGastosFiltrados((atual) => atual.filter((g) => g.id !== id));
+
+              if (gastoRemovido) {
+                await registrarEvento('removido', gastoRemovido);
+              }
+            } catch (erro) {
+              console.log('Erro ao excluir gasto:', erro);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const total = gastosFiltrados.reduce((soma, item) => soma + item.valor, 0);
 
   return (
@@ -35,6 +68,7 @@ export default function Detalhe() {
       <FlatList
         data={gastosFiltrados}
         keyExtractor={(item, index) => item.id ?? index.toString()}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <ItemGasto
             descricao={item.descricao}
@@ -42,11 +76,12 @@ export default function Detalhe() {
             categoria={item.categoria}
             formaPagamento={item.formaPagamento}
             dataGasto={item.dataGasto}
+            onEditar={() => router.push({ pathname: '/adicionar', params: { id: item.id } })}
+            onExcluir={() => confirmarExclusao(item.id)}
           />
         )}
         ListFooterComponent={<Text style={styles.total}>Total: R$ {total.toFixed(2)}</Text>}
         ListEmptyComponent={<Text style={styles.vazio}>Nenhum gasto encontrado.</Text>}
-        showsVerticalScrollIndicator={false}
       />
     </View>
   );
