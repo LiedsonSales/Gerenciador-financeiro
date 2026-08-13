@@ -9,7 +9,8 @@ import { cores, espacamento, tipografia } from '../constants/theme';
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
 export default function Detalhe() {
-  const { tipo, valor } = useLocalSearchParams();
+  const { tipo, valor, somenteLeitura } = useLocalSearchParams();
+  const permiteAcoes = somenteLeitura !== '1';
   const [gastosFiltrados, setGastosFiltrados] = useState([]);
   const router = useRouter();
 
@@ -76,8 +77,8 @@ export default function Detalhe() {
             categoria={item.categoria}
             formaPagamento={item.formaPagamento}
             dataGasto={item.dataGasto}
-            onEditar={() => router.push({ pathname: '/adicionar', params: { id: item.id } })}
-            onExcluir={() => confirmarExclusao(item.id)}
+            onEditar={permiteAcoes ? () => router.push({ pathname: '/adicionar', params: { id: item.id } }) : undefined}
+            onExcluir={permiteAcoes ? () => confirmarExclusao(item.id) : undefined}
           />
         )}
         ListFooterComponent={<Text style={styles.total}>Total: R$ {total.toFixed(2)}</Text>}

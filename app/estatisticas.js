@@ -63,7 +63,7 @@ export default function Estatisticas() {
   const listaPagamentos = paraListaOrdenada(agruparPorCampo(gastosDoMes, 'formaPagamento'));
 
   const irParaDetalhe = (tipo, valor) => {
-    router.push({ pathname: '/detalhe', params: { tipo, valor } });
+    router.push({ pathname: '/detalhe', params: { tipo, valor, somenteLeitura: '1' } });
   };
 
   const maiorValor = Math.max(...listaCategorias.map((i) => i.valor), 1);
