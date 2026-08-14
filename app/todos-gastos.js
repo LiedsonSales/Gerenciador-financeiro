@@ -53,6 +53,6 @@ export default function TodosGastos() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxl, paddingHorizontal: espacamento.xl },
+  container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxxl, paddingHorizontal: espacamento.xl },
   titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
 });

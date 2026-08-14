@@ -7,7 +7,7 @@ import ListaGastosAgrupada from '../components/ListaGastosAgrupada';
 import RendaMensal from '../components/RendaMensal';
 import BotaoIcone from '../components/BotaoIcone';
 import { registrarEvento } from '../utils/historico';
-import { filtrarGastosRecentes } from '../utils/periodo';
+import { filtrarGastosRecentes, filtrarGastosPorMes, obterAnoMes } from '../utils/periodo';
 import { cores, espacamento, tipografia } from '../constants/theme';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
@@ -50,7 +50,10 @@ export default function Index() {
     }
   };
 
-  const total = gastos.reduce((soma, item) => soma + item.valor, 0);
+  const { ano, mes } = obterAnoMes(Date.now());
+  const gastosDoMesAtual = filtrarGastosPorMes(gastos, ano, mes);
+  const totalDoMes = gastosDoMesAtual.reduce((soma, item) => soma + item.valor, 0);
+
   const secoesRecentes = filtrarGastosRecentes(gastos);
 
   return (
@@ -62,7 +65,7 @@ export default function Index() {
         </Pressable>
       </View>
 
-      <RendaMensal totalGasto={total} onPress={() => router.push('/estatisticas')} />
+      <RendaMensal totalGasto={totalDoMes} onPress={() => router.push('/estatisticas')} />
 
       <View style={styles.botoesRapidos}>
         <BotaoIcone icone="pie-chart" onPress={() => router.push('/resumo')} />

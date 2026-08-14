@@ -63,7 +63,7 @@ export default function Estatisticas() {
   const listaPagamentos = paraListaOrdenada(agruparPorCampo(gastosDoMes, 'formaPagamento'));
 
   const irParaDetalhe = (tipo, valor) => {
-    router.push({ pathname: '/detalhe', params: { tipo, valor, somenteLeitura: '1' } });
+  router.push({ pathname: '/detalhe', params: { tipo, valor, ano, mes } });
   };
 
   const maiorValor = Math.max(...listaCategorias.map((i) => i.valor), 1);
@@ -107,8 +107,15 @@ export default function Estatisticas() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: cores.fundo },
-  conteudo: { paddingTop: espacamento.xxl, paddingHorizontal: espacamento.xl, paddingBottom: espacamento.xxxl },
+  container: { 
+    flex: 1, 
+    backgroundColor: cores.fundo 
+  },
+  conteudo: { 
+    paddingTop: espacamento.xxxl, 
+    paddingHorizontal: espacamento.xl, 
+    paddingBottom: espacamento.xxxl 
+  },
   titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
   cardOrcamento: {
     backgroundColor: cores.superficie,

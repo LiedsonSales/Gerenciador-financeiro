@@ -4,13 +4,13 @@ import { useFocusEffect, useLocalSearchParams, useRouter, Stack } from 'expo-rou
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ItemGasto from '../components/ItemGasto';
 import { registrarEvento } from '../utils/historico';
+import { filtrarGastosPorMes } from '../utils/periodo';
 import { cores, espacamento, tipografia } from '../constants/theme';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
 export default function Detalhe() {
-  const { tipo, valor, somenteLeitura } = useLocalSearchParams();
-  const permiteAcoes = somenteLeitura !== '1';
+  const { tipo, valor, ano, mes } = useLocalSearchParams();
   const [gastosFiltrados, setGastosFiltrados] = useState([]);
   const router = useRouter();
 
@@ -19,14 +19,19 @@ export default function Detalhe() {
       const carregar = async () => {
         try {
           const dados = await AsyncStorage.getItem(CHAVE_ARMAZENAMENTO);
-          const todos = dados ? JSON.parse(dados) : [];
+          let todos = dados ? JSON.parse(dados) : [];
+
+          if (ano !== undefined && mes !== undefined) {
+            todos = filtrarGastosPorMes(todos, parseInt(ano, 10), parseInt(mes, 10));
+          }
+
           setGastosFiltrados(todos.filter((g) => g[tipo] === valor));
         } catch (erro) {
           console.log('Erro ao carregar detalhe:', erro);
         }
       };
       carregar();
-    }, [tipo, valor])
+    }, [tipo, valor, ano, mes])
   );
 
   const confirmarExclusao = (id) => {
@@ -41,9 +46,9 @@ export default function Detalhe() {
           onPress: async () => {
             try {
               const dados = await AsyncStorage.getItem(CHAVE_ARMAZENAMENTO);
-              const todos = dados ? JSON.parse(dados) : [];
-              const gastoRemovido = todos.find((g) => g.id === id);
-              const novaListaCompleta = todos.filter((g) => g.id !== id);
+              const todosCompletos = dados ? JSON.parse(dados) : [];
+              const gastoRemovido = todosCompletos.find((g) => g.id === id);
+              const novaListaCompleta = todosCompletos.filter((g) => g.id !== id);
 
               await AsyncStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(novaListaCompleta));
               setGastosFiltrados((atual) => atual.filter((g) => g.id !== id));
@@ -77,8 +82,8 @@ export default function Detalhe() {
             categoria={item.categoria}
             formaPagamento={item.formaPagamento}
             dataGasto={item.dataGasto}
-            onEditar={permiteAcoes ? () => router.push({ pathname: '/adicionar', params: { id: item.id } }) : undefined}
-            onExcluir={permiteAcoes ? () => confirmarExclusao(item.id) : undefined}
+            onEditar={() => router.push({ pathname: '/adicionar', params: { id: item.id } })}
+            onExcluir={() => confirmarExclusao(item.id)}
           />
         )}
         ListFooterComponent={<Text style={styles.total}>Total: R$ {total.toFixed(2)}</Text>}
@@ -89,7 +94,7 @@ export default function Detalhe() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxl, paddingHorizontal: espacamento.xl },
+  container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxxl, paddingHorizontal: espacamento.xl },
   titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
   total: { ...tipografia.h2, color: cores.textoPrimario, marginTop: espacamento.sm, textAlign: 'right' },
   vazio: { ...tipografia.body, color: cores.textoSecundario, textAlign: 'center', marginTop: espacamento.xl },

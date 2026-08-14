@@ -48,7 +48,8 @@ export default function Historico() {
               <Text style={styles.descricao}>
                 {item.tipo === 'adicionado' ? 'Adicionado' : 'Removido'}: {item.descricao}
               </Text>
-              <Text style={styles.detalhe}>R$ {item.valor.toFixed(2)} · {formatarData(item.dataEvento)}</Text>
+              <Text style={styles.detalhe}>R$ {item.valor.toFixed(2)}{item.formaPagamento ? ` · ${item.formaPagamento}` : ''} · {formatarData(item.dataEvento)}
+</Text>
             </View>
           </View>
         )}
@@ -59,7 +60,7 @@ export default function Historico() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxl, paddingHorizontal: espacamento.xl },
+  container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxxl, paddingHorizontal: espacamento.xl },
   titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
   botaoOrdem: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: espacamento.xs,

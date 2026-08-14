@@ -74,7 +74,11 @@ export default function Resumo() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: cores.fundo },
-  conteudo: { paddingTop: espacamento.xxl, paddingHorizontal: espacamento.xl, paddingBottom: espacamento.xxxl },
+  conteudo: { 
+    paddingTop: espacamento.xxxl, 
+    paddingHorizontal: espacamento.xl, 
+    paddingBottom: espacamento.xxxl 
+  },
   titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
   cardTotal: {
     backgroundColor: cores.superficie,

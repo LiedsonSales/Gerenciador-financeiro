@@ -13,6 +13,7 @@ export const registrarEvento = async (tipo, gasto) => {
       descricao: gasto.descricao,
       valor: gasto.valor,
       categoria: gasto.categoria,
+      formaPagamento: gasto.formaPagamento,
       dataEvento: Date.now(),
     };
 

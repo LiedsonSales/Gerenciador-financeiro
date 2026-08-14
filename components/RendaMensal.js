@@ -54,6 +54,10 @@ const RendaMensal = ({ totalGasto = 0, onPress }) => {
   const percentual = renda > 0 ? (totalGasto / renda) * 100 : 0;
   const percentualVisual = Math.min(percentual, 100);
 
+  let corBarra = cores.branco;
+  if (percentual >= 70) corBarra = cores.alerta;
+  if (percentual >= 100) corBarra = cores.perigo;
+
   return (
     <Pressable style={[styles.card, sombra]} onPress={onPress}>
       <View style={styles.linhaTopo}>
@@ -70,7 +74,7 @@ const RendaMensal = ({ totalGasto = 0, onPress }) => {
       {renda > 0 && (
         <>
           <View style={styles.barraTrack}>
-            <View style={[styles.barraFill, { width: `${percentualVisual}%` }]} />
+            <View style={[styles.barraFill, { width: `${percentualVisual}%`, backgroundColor: corBarra }]} />
           </View>
           <View style={styles.rodape}>
             <Text style={styles.rodapeTexto}>R$ {totalGasto.toFixed(2)} gastos</Text>
@@ -89,10 +93,23 @@ const styles = StyleSheet.create({
     padding: espacamento.lg,
     marginBottom: espacamento.lg,
   },
-  linhaTopo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  label: { ...tipografia.caption, color: 'rgba(255,255,255,0.85)' },
-  botaoLapis: { padding: 4 },
-  valor: { ...tipografia.h1, color: cores.branco, marginTop: 4 },
+  linhaTopo: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center' 
+  },
+  label: { 
+    ...tipografia.caption, 
+    color: 'rgba(255,255,255,0.85)' 
+  },
+  botaoLapis: { 
+    padding: 4 
+  },
+  valor: { 
+    ...tipografia.h1, 
+    color: cores.branco, 
+    marginTop: 4 
+  },
   barraTrack: {
     height: 6,
     backgroundColor: 'rgba(255,255,255,0.25)',
@@ -100,10 +117,25 @@ const styles = StyleSheet.create({
     marginTop: espacamento.md,
     overflow: 'hidden',
   },
-  barraFill: { height: '100%', backgroundColor: cores.branco, borderRadius: raio.pill },
-  rodape: { flexDirection: 'row', justifyContent: 'space-between', marginTop: espacamento.xs },
-  rodapeTexto: { fontSize: 11, color: 'rgba(255,255,255,0.85)' },
-  linhaEdicao: { flexDirection: 'row', gap: espacamento.sm, marginTop: espacamento.sm, alignItems: 'center' },
+  barraFill: { 
+    height: '100%',  
+    borderRadius: raio.pill 
+  },
+  rodape: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    marginTop: espacamento.xs 
+  },
+  rodapeTexto: { 
+    fontSize: 11, 
+    color: 'rgba(255,255,255,0.85)' 
+  },
+  linhaEdicao: { 
+    flexDirection: 'row', 
+    gap: espacamento.sm, 
+    marginTop: espacamento.sm, 
+    alignItems: 'center' 
+  },
   input: {
     flex: 1,
     backgroundColor: 'rgba(255,255,255,0.15)',
