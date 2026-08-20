@@ -35,7 +35,8 @@
     "plugins": [
       "expo-router",
       "@bacons/apple-targets",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "./plugins/withQuickSettingsTile"
     ],
     "extra": {
       "router": {},
