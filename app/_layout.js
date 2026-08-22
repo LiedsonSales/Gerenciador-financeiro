@@ -1,16 +1,18 @@
 import { Stack } from 'expo-router';
-import { cores } from '../constants/theme';
+import { ThemeProvider, useTema } from '../context/ThemeContext';
 
-const opcoesComuns = {
-  headerStyle: { backgroundColor: cores.fundo },
-  headerShadowVisible: false,
-  headerTintColor: cores.primaria,
-  headerTitleStyle: { color: cores.textoPrimario, fontWeight: '700' },
-};
+function LayoutInterno() {
+  const { cores } = useTema();
 
-export default function Layout() {
   return (
-    <Stack screenOptions={opcoesComuns}>
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: cores.fundo },
+        headerShadowVisible: false,
+        headerTintColor: cores.primaria,
+        headerTitleStyle: { color: cores.textoPrimario, fontWeight: '700' },
+      }}
+    >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="adicionar" options={{ title: 'Adicionar Gasto' }} />
       <Stack.Screen name="resumo" options={{ headerShown: false }} />
@@ -20,5 +22,13 @@ export default function Layout() {
       <Stack.Screen name="historico-mensal" options={{ headerShown: false }} />
       <Stack.Screen name="todos-gastos" options={{ headerShown: false }} />
     </Stack>
+  );
+}
+
+export default function Layout() {
+  return (
+    <ThemeProvider>
+      <LayoutInterno />
+    </ThemeProvider>
   );
 }

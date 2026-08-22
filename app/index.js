@@ -8,13 +8,16 @@ import RendaMensal from '../components/RendaMensal';
 import BotaoIcone from '../components/BotaoIcone';
 import { registrarEvento } from '../utils/historico';
 import { filtrarGastosRecentes, filtrarGastosPorMes, obterAnoMes } from '../utils/periodo';
-import { cores, espacamento, tipografia } from '../constants/theme';
+import { espacamento, tipografia } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
 export default function Index() {
   const [gastos, setGastos] = useState([]);
   const router = useRouter();
+  const { cores, temaEscuroAtivo, alternarTema } = useTema();
+  const styles = criarEstilos(cores);
 
   useFocusEffect(
     useCallback(() => {
@@ -52,20 +55,28 @@ export default function Index() {
 
   const { ano, mes } = obterAnoMes(Date.now());
   const gastosDoMesAtual = filtrarGastosPorMes(gastos, ano, mes);
-  const totalDoMes = gastosDoMesAtual.reduce((soma, item) => soma + item.valor, 0);
-
+  const totalDoMesAtual = gastosDoMesAtual.reduce((soma, item) => soma + item.valor, 0);
   const secoesRecentes = filtrarGastosRecentes(gastos);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.titulo}>Meus Gastos</Text>
-        <Pressable style={styles.fab} onPress={() => router.push('/adicionar')} hitSlop={8}>
-          <Ionicons name="add" size={22} color={cores.branco} />
-        </Pressable>
+        <View style={styles.acoesHeader}>
+          <Pressable style={styles.botaoDebugTema} onPress={alternarTema} hitSlop={8}>
+            <Ionicons
+              name={temaEscuroAtivo ? 'sunny' : 'moon'}
+              size={18}
+              color={cores.primaria}
+            />
+          </Pressable>
+          <Pressable style={styles.fab} onPress={() => router.push('/adicionar')} hitSlop={8}>
+            <Ionicons name="add" size={22} color={cores.branco} />
+          </Pressable>
+        </View>
       </View>
 
-      <RendaMensal totalGasto={totalDoMes} onPress={() => router.push('/estatisticas')} />
+      <RendaMensal totalGasto={totalDoMesAtual} onPress={() => router.push('/estatisticas')} />
 
       <View style={styles.botoesRapidos}>
         <BotaoIcone icone="pie-chart" onPress={() => router.push('/resumo')} />
@@ -84,25 +95,35 @@ export default function Index() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: cores.fundo, paddingHorizontal: espacamento.xl },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: espacamento.xxxl,
-    marginBottom: espacamento.lg,
-  },
-  titulo: { ...tipografia.h1, color: cores.textoPrimario, letterSpacing: -0.4 },
-  fab: {
-    width: 40, height: 40, borderRadius: 12, backgroundColor: cores.primaria,
-    alignItems: 'center', justifyContent: 'center',
-    shadowColor: cores.primaria, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 4,
-  },
-  botoesRapidos: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: espacamento.xl,
-    marginBottom: espacamento.lg,
-  },
-});
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: cores.fundo, paddingHorizontal: espacamento.xl },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: espacamento.xxxl,
+      marginBottom: espacamento.lg,
+    },
+    titulo: { ...tipografia.h1, color: cores.textoPrimario, letterSpacing: -0.4 },
+    acoesHeader: { flexDirection: 'row', alignItems: 'center', gap: espacamento.sm },
+    botaoDebugTema: {
+      width: 36,
+      height: 36,
+      borderRadius: 10,
+      backgroundColor: cores.primariaClara,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    fab: {
+      width: 40, height: 40, borderRadius: 12, backgroundColor: cores.primaria,
+      alignItems: 'center', justifyContent: 'center',
+      shadowColor: cores.primaria, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 8, elevation: 4,
+    },
+    botoesRapidos: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      gap: espacamento.xl,
+      marginBottom: espacamento.lg,
+    },
+  });

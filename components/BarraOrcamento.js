@@ -1,7 +1,11 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { cores, espacamento, tipografia, raio } from '../constants/theme';
+import { espacamento, tipografia, raio } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 const BarraOrcamento = ({ totalGasto, rendaReferencia }) => {
+  const { cores } = useTema();
+  const styles = criarEstilos(cores);
+
   if (rendaReferencia <= 0) {
     return (
       <View style={styles.container}>
@@ -31,20 +35,16 @@ const BarraOrcamento = ({ totalGasto, rendaReferencia }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { marginBottom: espacamento.xl },
-  aviso: { ...tipografia.body, color: cores.textoSecundario },
-  linhaTextos: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: espacamento.xs },
-  gasto: { ...tipografia.bodyBold, color: cores.textoPrimario },
-  percentual: { ...tipografia.bodyBold },
-  barraFundo: {
-    height: 8,
-    backgroundColor: cores.primariaClara,
-    borderRadius: raio.pill,
-    overflow: 'hidden',
-  },
-  barraPreenchida: { height: '100%', borderRadius: raio.pill },
-  referencia: { ...tipografia.caption, color: cores.textoTerciario, marginTop: espacamento.xs },
-});
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    container: { marginBottom: espacamento.xl },
+    aviso: { ...tipografia.body, color: cores.textoSecundario },
+    linhaTextos: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: espacamento.xs },
+    gasto: { ...tipografia.bodyBold, color: cores.textoPrimario },
+    percentual: { ...tipografia.bodyBold },
+    barraFundo: { height: 8, backgroundColor: cores.primariaClara, borderRadius: raio.pill, overflow: 'hidden' },
+    barraPreenchida: { height: '100%', borderRadius: raio.pill },
+    referencia: { ...tipografia.caption, color: cores.textoTerciario, marginTop: espacamento.xs },
+  });
 
 export default BarraOrcamento;

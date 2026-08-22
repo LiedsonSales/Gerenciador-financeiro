@@ -6,7 +6,8 @@ import { buscarRenda } from '../utils/renda';
 import { filtrarGastosPorMes, obterAnoMes } from '../utils/periodo';
 import SeletorMes from '../components/SeletorMes';
 import BarraOrcamento from '../components/BarraOrcamento';
-import { cores, espacamento, tipografia, raio } from '../constants/theme';
+import { espacamento, tipografia, raio } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
@@ -25,6 +26,8 @@ const paraListaOrdenada = (agrupado) =>
 export default function Estatisticas() {
   const params = useLocalSearchParams();
   const atual = obterAnoMes(Date.now());
+  const { cores } = useTema();
+  const styles = criarEstilos(cores);
 
   const [ano, setAno] = useState(params.ano ? parseInt(params.ano, 10) : atual.ano);
   const [mes, setMes] = useState(params.mes !== undefined ? parseInt(params.mes, 10) : atual.mes);
@@ -63,7 +66,7 @@ export default function Estatisticas() {
   const listaPagamentos = paraListaOrdenada(agruparPorCampo(gastosDoMes, 'formaPagamento'));
 
   const irParaDetalhe = (tipo, valor) => {
-  router.push({ pathname: '/detalhe', params: { tipo, valor, ano, mes } });
+    router.push({ pathname: '/detalhe', params: { tipo, valor, ano, mes } });
   };
 
   const maiorValor = Math.max(...listaCategorias.map((i) => i.valor), 1);
@@ -106,41 +109,31 @@ export default function Estatisticas() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: cores.fundo 
-  },
-  conteudo: { 
-    paddingTop: espacamento.xxxl, 
-    paddingHorizontal: espacamento.xl, 
-    paddingBottom: espacamento.xxxl 
-  },
-  titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
-  cardOrcamento: {
-    backgroundColor: cores.superficie,
-    borderWidth: 1,
-    borderColor: cores.borda,
-    borderRadius: raio.lg,
-    padding: espacamento.lg,
-    marginBottom: espacamento.xl,
-  },
-  secao: { marginBottom: espacamento.xl },
-  subtitulo: { ...tipografia.h2, color: cores.textoPrimario, marginBottom: espacamento.sm },
-  vazio: { ...tipografia.body, color: cores.textoSecundario },
-  linha: { flexDirection: 'row', alignItems: 'center', gap: espacamento.sm, paddingVertical: espacamento.sm },
-  posicao: {
-    width: 22, height: 22, borderRadius: raio.sm,
-    backgroundColor: cores.primariaClara, alignItems: 'center', justifyContent: 'center',
-  },
-  posicaoTexto: { fontSize: 11, fontWeight: '700', color: cores.primariaEscura },
-  nomeItem: { ...tipografia.body, color: cores.textoPrimario, width: 100 },
-  barraTrack: { flex: 1, height: 5, backgroundColor: cores.primariaClara, borderRadius: raio.pill, overflow: 'hidden' },
-  barraFill: { height: '100%', backgroundColor: cores.primaria, borderRadius: raio.pill },
-  valorItem: { ...tipografia.bodyBold, color: cores.textoPrimario, width: 66, textAlign: 'right' },
-  botaoHistorico: {
-    borderWidth: 1, borderColor: cores.primaria, borderRadius: raio.sm,
-    paddingVertical: espacamento.md, alignItems: 'center', marginTop: espacamento.sm,
-  },
-  botaoHistoricoTexto: { color: cores.primaria, fontWeight: '700' },
-});
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: cores.fundo },
+    conteudo: { paddingTop: espacamento.xxxl, paddingHorizontal: espacamento.xl, paddingBottom: espacamento.xxxl },
+    titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
+    cardOrcamento: {
+      backgroundColor: cores.superficie, borderWidth: 1, borderColor: cores.borda,
+      borderRadius: raio.lg, padding: espacamento.lg, marginBottom: espacamento.xl,
+    },
+    secao: { marginBottom: espacamento.xl },
+    subtitulo: { ...tipografia.h2, color: cores.textoPrimario, marginBottom: espacamento.sm },
+    vazio: { ...tipografia.body, color: cores.textoSecundario },
+    linha: { flexDirection: 'row', alignItems: 'center', gap: espacamento.sm, paddingVertical: espacamento.sm },
+    posicao: {
+      width: 22, height: 22, borderRadius: raio.sm, backgroundColor: cores.primariaClara,
+      alignItems: 'center', justifyContent: 'center',
+    },
+    posicaoTexto: { fontSize: 11, fontWeight: '700', color: cores.primariaEscura },
+    nomeItem: { ...tipografia.body, color: cores.textoPrimario, width: 100 },
+    barraTrack: { flex: 1, height: 5, backgroundColor: cores.primariaClara, borderRadius: raio.pill, overflow: 'hidden' },
+    barraFill: { height: '100%', backgroundColor: cores.primaria, borderRadius: raio.pill },
+    valorItem: { ...tipografia.bodyBold, color: cores.textoPrimario, width: 66, textAlign: 'right' },
+    botaoHistorico: {
+      borderWidth: 1, borderColor: cores.primaria, borderRadius: raio.sm,
+      paddingVertical: espacamento.md, alignItems: 'center', marginTop: espacamento.sm,
+    },
+    botaoHistoricoTexto: { color: cores.primaria, fontWeight: '700' },
+  });

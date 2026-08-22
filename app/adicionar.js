@@ -4,13 +4,17 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FormularioGasto from '../components/FormularioGasto';
 import { registrarEvento } from '../utils/historico';
-import { cores, espacamento } from '../constants/theme';
+import { espacamento } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
 export default function Adicionar() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
+  const { cores } = useTema();
+  const styles = criarEstilos(cores);
+
   const [gastoParaEditar, setGastoParaEditar] = useState(null);
   const [carregando, setCarregando] = useState(!!id);
 
@@ -70,8 +74,9 @@ export default function Adicionar() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: cores.fundo },
-  conteudo: { padding: espacamento.xl, paddingBottom: espacamento.xxxl },
-  loading: { flex: 1, backgroundColor: cores.fundo, alignItems: 'center', justifyContent: 'center' },
-});
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: cores.fundo },
+    conteudo: { padding: espacamento.xl, paddingBottom: espacamento.xxxl },
+    loading: { flex: 1, backgroundColor: cores.fundo, alignItems: 'center', justifyContent: 'center' },
+  });

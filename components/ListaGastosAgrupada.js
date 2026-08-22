@@ -1,8 +1,12 @@
 import { SectionList, Text, View, StyleSheet, Alert } from 'react-native';
 import ItemGasto from './ItemGasto';
-import { cores, espacamento, tipografia } from '../constants/theme';
+import { espacamento, tipografia } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 const ListaGastosAgrupada = ({ secoes, apenasHora, onEditar, onExcluir, textoVazio, ListFooterComponent }) => {
+  const { cores } = useTema();
+  const styles = criarEstilos(cores);
+
   const confirmarExclusao = (id) => {
     Alert.alert(
       'Excluir gasto',
@@ -46,17 +50,18 @@ const ListaGastosAgrupada = ({ secoes, apenasHora, onEditar, onExcluir, textoVaz
   );
 };
 
-const styles = StyleSheet.create({
-  headerSecao: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
-    marginTop: espacamento.md,
-    marginBottom: espacamento.sm,
-  },
-  tituloSecao: { ...tipografia.caption, fontWeight: '700', color: cores.textoTerciario, textTransform: 'uppercase' },
-  totalSecao: { ...tipografia.caption, fontWeight: '700', color: cores.textoSecundario },
-  vazio: { ...tipografia.body, color: cores.textoSecundario, textAlign: 'center', marginTop: espacamento.xl },
-});
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    headerSecao: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'baseline',
+      marginTop: espacamento.md,
+      marginBottom: espacamento.sm,
+    },
+    tituloSecao: { ...tipografia.caption, fontWeight: '700', color: cores.textoTerciario, textTransform: 'uppercase' },
+    totalSecao: { ...tipografia.caption, fontWeight: '700', color: cores.textoSecundario },
+    vazio: { ...tipografia.body, color: cores.textoSecundario, textAlign: 'center', marginTop: espacamento.xl },
+  });
 
 export default ListaGastosAgrupada;

@@ -4,9 +4,13 @@ import SeletorPagamento from './SeletorPagamento';
 import SeletorData from './SeletorData';
 import SeletorCategoria from './SeletorCategoria';
 import { buscarCategoriasExistentes } from '../utils/categorias';
-import { cores, espacamento, tipografia, raio, sombra } from '../constants/theme';
+import { espacamento, tipografia, raio, sombra } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 const FormularioGasto = ({ aoSalvar, gastoInicial, textoBotao = 'Adicionar Gasto' }) => {
+  const { cores } = useTema();
+  const styles = criarEstilos(cores);
+
   const [descricaoTexto, setDescricaoTexto] = useState('');
   const [valorTexto, setValorTexto] = useState('');
   const [categoriaTexto, setCategoriaTexto] = useState('');
@@ -77,25 +81,18 @@ const FormularioGasto = ({ aoSalvar, gastoInicial, textoBotao = 'Adicionar Gasto
   );
 };
 
-const styles = StyleSheet.create({
-  label: { ...tipografia.caption, color: cores.textoTerciario, marginTop: espacamento.md, marginBottom: espacamento.xs },
-  input: {
-    borderWidth: 1,
-    borderColor: cores.borda,
-    borderRadius: raio.sm,
-    padding: espacamento.md,
-    backgroundColor: cores.superficie,
-    fontSize: 15,
-    color: cores.textoPrimario,
-  },
-  botaoSalvar: {
-    backgroundColor: cores.primaria,
-    borderRadius: raio.sm,
-    paddingVertical: espacamento.md,
-    alignItems: 'center',
-    marginTop: espacamento.xl,
-  },
-  botaoSalvarTexto: { color: cores.branco, fontWeight: '700', fontSize: 15 },
-});
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    label: { ...tipografia.caption, color: cores.textoTerciario, marginTop: espacamento.md, marginBottom: espacamento.xs },
+    input: {
+      borderWidth: 1, borderColor: cores.borda, borderRadius: raio.sm, padding: espacamento.md,
+      backgroundColor: cores.superficie, fontSize: 15, color: cores.textoPrimario,
+    },
+    botaoSalvar: {
+      backgroundColor: cores.primaria, borderRadius: raio.sm, paddingVertical: espacamento.md,
+      alignItems: 'center', marginTop: espacamento.xl,
+    },
+    botaoSalvarTexto: { color: cores.branco, fontWeight: '700', fontSize: 15 },
+  });
 
 export default FormularioGasto;

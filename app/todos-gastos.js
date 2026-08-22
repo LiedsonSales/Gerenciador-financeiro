@@ -5,13 +5,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ListaGastosAgrupada from '../components/ListaGastosAgrupada';
 import { registrarEvento } from '../utils/historico';
 import { agruparGastosPorMes } from '../utils/periodo';
-import { cores, espacamento, tipografia } from '../constants/theme';
+import { espacamento, tipografia } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
 export default function TodosGastos() {
   const [gastos, setGastos] = useState([]);
   const router = useRouter();
+  const { cores } = useTema();
+  const styles = criarEstilos(cores);
 
   useFocusEffect(
     useCallback(() => {
@@ -52,7 +55,8 @@ export default function TodosGastos() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxxl, paddingHorizontal: espacamento.xl },
-  titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
-});
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxxl, paddingHorizontal: espacamento.xl },
+    titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
+  });

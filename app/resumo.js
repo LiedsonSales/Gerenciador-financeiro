@@ -2,7 +2,8 @@ import { useState, useCallback } from 'react';
 import { StyleSheet, View, Text, Pressable, ScrollView } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { cores, espacamento, tipografia, raio } from '../constants/theme';
+import { espacamento, tipografia, raio } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
@@ -20,6 +21,8 @@ const paraLista = (agrupado) => Object.entries(agrupado).map(([chave, valor]) =>
 export default function Resumo() {
   const [gastos, setGastos] = useState([]);
   const router = useRouter();
+  const { cores } = useTema();
+  const styles = criarEstilos(cores);
 
   useFocusEffect(
     useCallback(() => {
@@ -72,34 +75,24 @@ export default function Resumo() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: cores.fundo },
-  conteudo: { 
-    paddingTop: espacamento.xxxl, 
-    paddingHorizontal: espacamento.xl, 
-    paddingBottom: espacamento.xxxl 
-  },
-  titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
-  cardTotal: {
-    backgroundColor: cores.superficie,
-    borderWidth: 1,
-    borderColor: cores.borda,
-    borderRadius: raio.lg,
-    padding: espacamento.lg,
-    marginBottom: espacamento.xl,
-  },
-  totalLabel: { ...tipografia.caption, color: cores.textoSecundario },
-  totalValor: { ...tipografia.h1, color: cores.primaria, marginTop: 2 },
-  secao: { marginBottom: espacamento.xl },
-  subtitulo: { ...tipografia.h2, color: cores.textoPrimario, marginBottom: espacamento.sm },
-  vazio: { ...tipografia.body, color: cores.textoSecundario },
-  linha: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: espacamento.sm + 2,
-    borderBottomWidth: 1,
-    borderBottomColor: cores.borda,
-  },
-  nomeItem: { ...tipografia.body, color: cores.textoPrimario },
-  valorItem: { ...tipografia.bodyBold, color: cores.textoPrimario },
-});
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: cores.fundo },
+    conteudo: { paddingTop: espacamento.xxxl, paddingHorizontal: espacamento.xl, paddingBottom: espacamento.xxxl },
+    titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
+    cardTotal: {
+      backgroundColor: cores.superficie, borderWidth: 1, borderColor: cores.borda,
+      borderRadius: raio.lg, padding: espacamento.lg, marginBottom: espacamento.xl,
+    },
+    totalLabel: { ...tipografia.caption, color: cores.textoSecundario },
+    totalValor: { ...tipografia.h1, color: cores.primaria, marginTop: 2 },
+    secao: { marginBottom: espacamento.xl },
+    subtitulo: { ...tipografia.h2, color: cores.textoPrimario, marginBottom: espacamento.sm },
+    vazio: { ...tipografia.body, color: cores.textoSecundario },
+    linha: {
+      flexDirection: 'row', justifyContent: 'space-between', paddingVertical: espacamento.sm + 2,
+      borderBottomWidth: 1, borderBottomColor: cores.borda,
+    },
+    nomeItem: { ...tipografia.body, color: cores.textoPrimario },
+    valorItem: { ...tipografia.bodyBold, color: cores.textoPrimario },
+  });

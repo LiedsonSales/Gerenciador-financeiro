@@ -2,7 +2,8 @@ import { useState, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet, Platform, Modal } from 'react-native';
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { formatarData } from '../utils/formatarData';
-import { cores, espacamento, tipografia, raio } from '../constants/theme';
+import { espacamento, tipografia, raio } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 const combinarDataHora = (dataBase, novaData, tipo) => {
   const resultado = new Date(dataBase);
@@ -15,6 +16,9 @@ const combinarDataHora = (dataBase, novaData, tipo) => {
 };
 
 const SeletorData = ({ dataSelecionada, onSelecionar }) => {
+  const { cores } = useTema();
+  const styles = criarEstilos(cores);
+
   const [modalHoraVisivel, setModalHoraVisivel] = useState(false);
   const [horaBase, setHoraBase] = useState(new Date(dataSelecionada));
   const horaEscolhidaRef = useRef(new Date(dataSelecionada));
@@ -114,80 +118,51 @@ const SeletorData = ({ dataSelecionada, onSelecionar }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { marginTop: espacamento.lg },
-  label: { ...tipografia.caption, color: cores.textoTerciario },
-  dataTexto: { ...tipografia.bodyBold, color: cores.textoPrimario, marginTop: 2, marginBottom: espacamento.sm },
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    container: { marginTop: espacamento.lg },
+    label: { ...tipografia.caption, color: cores.textoTerciario },
+    dataTexto: { ...tipografia.bodyBold, color: cores.textoPrimario, marginTop: 2, marginBottom: espacamento.sm },
 
-  linhaPickersIOS: { flexDirection: 'row', alignItems: 'center', gap: espacamento.sm },
+    linhaPickersIOS: { flexDirection: 'row', alignItems: 'center', gap: espacamento.sm },
+    pickerCompactoWrapper: { height: 40, justifyContent: 'center', alignItems: 'center' },
+    botaoHora: {
+      height: 40, justifyContent: 'center', alignItems: 'center', paddingHorizontal: espacamento.md,
+      borderWidth: 1, borderColor: cores.borda, borderRadius: raio.sm, backgroundColor: cores.superficie,
+    },
+    botaoHoraTexto: { color: cores.textoPrimario, fontWeight: '600', fontSize: 14 },
+    botaoAgora: {
+      height: 40, justifyContent: 'center', alignItems: 'center', paddingHorizontal: espacamento.md,
+      borderWidth: 1, borderColor: cores.primaria, borderRadius: raio.sm,
+    },
+    botaoAgoraTexto: { color: cores.primaria, fontWeight: '700', fontSize: 13 },
 
-  pickerCompactoWrapper: {
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  botaoHora: {
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: espacamento.md,
-    borderWidth: 1,
-    borderColor: cores.borda,
-    borderRadius: raio.sm,
-    backgroundColor: cores.superficie,
-  },
-  botaoHoraTexto: { color: cores.textoPrimario, fontWeight: '600', fontSize: 14 },
-  botaoAgora: {
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: espacamento.md,
-    borderWidth: 1,
-    borderColor: cores.primaria,
-    borderRadius: raio.sm,
-  },
-  botaoAgoraTexto: { color: cores.primaria, fontWeight: '700', fontSize: 13 },
-  botoes: { flexDirection: 'row', gap: espacamento.sm },
-  botao: {
-    flex: 1,
-    paddingVertical: espacamento.sm + 2,
-    borderWidth: 1,
-    borderColor: cores.primaria,
-    borderRadius: raio.sm,
-    alignItems: 'center',
-  },
-  botaoTexto: { color: cores.primaria, fontWeight: '700', fontSize: 14 },
+    botoes: { flexDirection: 'row', gap: espacamento.sm },
+    botao: {
+      flex: 1, paddingVertical: espacamento.sm + 2, borderWidth: 1,
+      borderColor: cores.primaria, borderRadius: raio.sm, alignItems: 'center',
+    },
+    botaoTexto: { color: cores.primaria, fontWeight: '700', fontSize: 14 },
 
-  modalFundo: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.4)',
-  },
-  modalConteudo: {
-    backgroundColor: cores.superficie,
-    borderTopLeftRadius: raio.xl,
-    borderTopRightRadius: raio.xl,
-    padding: espacamento.xl,
-  },
-  modalTitulo: { ...tipografia.h2, color: cores.textoPrimario, marginBottom: espacamento.sm, textAlign: 'center' },
-  modalBotoes: { flexDirection: 'row', gap: espacamento.sm, marginTop: espacamento.md },
-  modalBotaoCancelar: {
-    flex: 1,
-    paddingVertical: espacamento.md,
-    borderRadius: raio.sm,
-    borderWidth: 1,
-    borderColor: cores.borda,
-    alignItems: 'center',
-  },
-  modalBotaoCancelarTexto: { color: cores.textoSecundario, fontWeight: '600' },
-  modalBotaoConfirmar: {
-    flex: 1,
-    paddingVertical: espacamento.md,
-    borderRadius: raio.sm,
-    backgroundColor: cores.primaria,
-    alignItems: 'center',
-  },
-  modalBotaoConfirmarTexto: { color: cores.branco, fontWeight: '700' },
-});
+    modalFundo: { flex: 1, justifyContent: 'flex-end', backgroundColor: cores.overlay },
+    modalConteudo: {
+      backgroundColor: cores.superficie,
+      borderTopLeftRadius: raio.xl,
+      borderTopRightRadius: raio.xl,
+      padding: espacamento.xl,
+    },
+    modalTitulo: { ...tipografia.h2, color: cores.textoPrimario, marginBottom: espacamento.sm, textAlign: 'center' },
+    modalBotoes: { flexDirection: 'row', gap: espacamento.sm, marginTop: espacamento.md },
+    modalBotaoCancelar: {
+      flex: 1, paddingVertical: espacamento.md, borderRadius: raio.sm,
+      borderWidth: 1, borderColor: cores.borda, alignItems: 'center',
+    },
+    modalBotaoCancelarTexto: { color: cores.textoSecundario, fontWeight: '600' },
+    modalBotaoConfirmar: {
+      flex: 1, paddingVertical: espacamento.md, borderRadius: raio.sm,
+      backgroundColor: cores.primaria, alignItems: 'center',
+    },
+    modalBotaoConfirmarTexto: { color: cores.branco, fontWeight: '700' },
+  });
 
 export default SeletorData;

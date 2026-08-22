@@ -2,9 +2,13 @@ import { useState, useEffect } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { buscarRenda, salvarRenda } from '../utils/renda';
-import { cores, espacamento, tipografia, raio, sombra } from '../constants/theme';
+import { espacamento, tipografia, raio, sombra } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 const RendaMensal = ({ totalGasto = 0, onPress }) => {
+  const { cores } = useTema();
+  const styles = criarEstilos(cores);
+
   const [renda, setRenda] = useState(0);
   const [editando, setEditando] = useState(false);
   const [textoInput, setTextoInput] = useState('');
@@ -86,73 +90,46 @@ const RendaMensal = ({ totalGasto = 0, onPress }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: cores.primaria,
-    borderRadius: raio.xl,
-    padding: espacamento.lg,
-    marginBottom: espacamento.lg,
-  },
-  linhaTopo: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center' 
-  },
-  label: { 
-    ...tipografia.caption, 
-    color: 'rgba(255,255,255,0.85)' 
-  },
-  botaoLapis: { 
-    padding: 4 
-  },
-  valor: { 
-    ...tipografia.h1, 
-    color: cores.branco, 
-    marginTop: 4 
-  },
-  barraTrack: {
-    height: 6,
-    backgroundColor: 'rgba(255,255,255,0.25)',
-    borderRadius: raio.pill,
-    marginTop: espacamento.md,
-    overflow: 'hidden',
-  },
-  barraFill: { 
-    height: '100%',  
-    borderRadius: raio.pill 
-  },
-  rodape: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    marginTop: espacamento.xs 
-  },
-  rodapeTexto: { 
-    fontSize: 11, 
-    color: 'rgba(255,255,255,0.85)' 
-  },
-  linhaEdicao: { 
-    flexDirection: 'row', 
-    gap: espacamento.sm, 
-    marginTop: espacamento.sm, 
-    alignItems: 'center' 
-  },
-  input: {
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: raio.sm,
-    padding: espacamento.sm,
-    color: cores.branco,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  botaoSalvar: {
-    width: 36,
-    height: 36,
-    borderRadius: raio.sm,
-    backgroundColor: cores.branco,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    card: {
+      backgroundColor: cores.primaria,
+      borderRadius: raio.xl,
+      padding: espacamento.lg,
+      marginBottom: espacamento.lg,
+    },
+    linhaTopo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    label: { ...tipografia.caption, color: 'rgba(255,255,255,0.85)' },
+    botaoLapis: { padding: 4 },
+    valor: { ...tipografia.h1, color: cores.branco, marginTop: 4 },
+    barraTrack: {
+      height: 6,
+      backgroundColor: 'rgba(255,255,255,0.25)',
+      borderRadius: raio.pill,
+      marginTop: espacamento.md,
+      overflow: 'hidden',
+    },
+    barraFill: { height: '100%', borderRadius: raio.pill },
+    rodape: { flexDirection: 'row', justifyContent: 'space-between', marginTop: espacamento.xs },
+    rodapeTexto: { fontSize: 11, color: 'rgba(255,255,255,0.85)' },
+    linhaEdicao: { flexDirection: 'row', gap: espacamento.sm, marginTop: espacamento.sm, alignItems: 'center' },
+    input: {
+      flex: 1,
+      backgroundColor: 'rgba(255,255,255,0.15)',
+      borderRadius: raio.sm,
+      padding: espacamento.sm,
+      color: cores.branco,
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    botaoSalvar: {
+      width: 36,
+      height: 36,
+      borderRadius: raio.sm,
+      backgroundColor: cores.branco,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+  });
 
 export default RendaMensal;

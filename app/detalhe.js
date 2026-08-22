@@ -5,7 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ItemGasto from '../components/ItemGasto';
 import { registrarEvento } from '../utils/historico';
 import { filtrarGastosPorMes } from '../utils/periodo';
-import { cores, espacamento, tipografia } from '../constants/theme';
+import { espacamento, tipografia } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
@@ -13,6 +14,8 @@ export default function Detalhe() {
   const { tipo, valor, ano, mes } = useLocalSearchParams();
   const [gastosFiltrados, setGastosFiltrados] = useState([]);
   const router = useRouter();
+  const { cores } = useTema();
+  const styles = criarEstilos(cores);
 
   useFocusEffect(
     useCallback(() => {
@@ -93,9 +96,10 @@ export default function Detalhe() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxxl, paddingHorizontal: espacamento.xl },
-  titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
-  total: { ...tipografia.h2, color: cores.textoPrimario, marginTop: espacamento.sm, textAlign: 'right' },
-  vazio: { ...tipografia.body, color: cores.textoSecundario, textAlign: 'center', marginTop: espacamento.xl },
-});
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxxl, paddingHorizontal: espacamento.xl },
+    titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
+    total: { ...tipografia.h2, color: cores.textoPrimario, marginTop: espacamento.sm, textAlign: 'right' },
+    vazio: { ...tipografia.body, color: cores.textoSecundario, textAlign: 'center', marginTop: espacamento.xl },
+  });

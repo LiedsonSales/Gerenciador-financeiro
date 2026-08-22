@@ -4,11 +4,14 @@ import { useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { carregarHistorico } from '../utils/historico';
 import { formatarData } from '../utils/formatarData';
-import { cores, espacamento, tipografia, raio } from '../constants/theme';
+import { espacamento, tipografia, raio } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 export default function Historico() {
   const [eventos, setEventos] = useState([]);
   const [ordem, setOrdem] = useState('recentes');
+  const { cores } = useTema();
+  const styles = criarEstilos(cores);
 
   useFocusEffect(
     useCallback(() => {
@@ -37,7 +40,7 @@ export default function Historico() {
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <View style={styles.linha}>
-            <View style={[styles.iconeContainer, { backgroundColor: item.tipo === 'adicionado' ? '#E9F9F0' : '#FDECEC' }]}>
+            <View style={[styles.iconeContainer, { backgroundColor: item.tipo === 'adicionado' ? cores.primariaClara : cores.perigo + '22' }]}>
               <Ionicons
                 name={item.tipo === 'adicionado' ? 'add' : 'remove'}
                 size={16}
@@ -48,8 +51,9 @@ export default function Historico() {
               <Text style={styles.descricao}>
                 {item.tipo === 'adicionado' ? 'Adicionado' : 'Removido'}: {item.descricao}
               </Text>
-              <Text style={styles.detalhe}>R$ {item.valor.toFixed(2)}{item.formaPagamento ? ` · ${item.formaPagamento}` : ''} · {formatarData(item.dataEvento)}
-</Text>
+              <Text style={styles.detalhe}>
+                R$ {item.valor.toFixed(2)}{item.formaPagamento ? ` · ${item.formaPagamento}` : ''} · {formatarData(item.dataEvento)}
+              </Text>
             </View>
           </View>
         )}
@@ -59,22 +63,23 @@ export default function Historico() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxxl, paddingHorizontal: espacamento.xl },
-  titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
-  botaoOrdem: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: espacamento.xs,
-    paddingVertical: espacamento.sm + 2, marginBottom: espacamento.lg,
-    borderWidth: 1, borderColor: cores.borda, borderRadius: raio.sm, backgroundColor: cores.superficie,
-  },
-  botaoOrdemTexto: { color: cores.primaria, fontWeight: '600', fontSize: 13 },
-  linha: {
-    flexDirection: 'row', alignItems: 'center', gap: espacamento.sm,
-    paddingVertical: espacamento.sm + 2, borderBottomWidth: 1, borderBottomColor: cores.borda,
-  },
-  iconeContainer: { width: 30, height: 30, borderRadius: raio.sm, alignItems: 'center', justifyContent: 'center' },
-  info: { flex: 1 },
-  descricao: { ...tipografia.body, color: cores.textoPrimario },
-  detalhe: { ...tipografia.caption, color: cores.textoSecundario, marginTop: 1 },
-  vazio: { ...tipografia.body, color: cores.textoSecundario, textAlign: 'center', marginTop: espacamento.xl },
-});
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxxl, paddingHorizontal: espacamento.xl },
+    titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
+    botaoOrdem: {
+      flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: espacamento.xs,
+      paddingVertical: espacamento.sm + 2, marginBottom: espacamento.lg,
+      borderWidth: 1, borderColor: cores.borda, borderRadius: raio.sm, backgroundColor: cores.superficie,
+    },
+    botaoOrdemTexto: { color: cores.primaria, fontWeight: '600', fontSize: 13 },
+    linha: {
+      flexDirection: 'row', alignItems: 'center', gap: espacamento.sm,
+      paddingVertical: espacamento.sm + 2, borderBottomWidth: 1, borderBottomColor: cores.borda,
+    },
+    iconeContainer: { width: 30, height: 30, borderRadius: raio.sm, alignItems: 'center', justifyContent: 'center' },
+    info: { flex: 1 },
+    descricao: { ...tipografia.body, color: cores.textoPrimario },
+    detalhe: { ...tipografia.caption, color: cores.textoSecundario, marginTop: 1 },
+    vazio: { ...tipografia.body, color: cores.textoSecundario, textAlign: 'center', marginTop: espacamento.xl },
+  });

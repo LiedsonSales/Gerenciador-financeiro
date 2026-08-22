@@ -1,7 +1,11 @@
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
-import { cores, espacamento, tipografia, raio } from '../constants/theme';
+import { espacamento, raio } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 const SeletorCategoria = ({ categorias, valorSelecionado, onSelecionar }) => {
+  const { cores } = useTema();
+  const styles = criarEstilos(cores);
+
   if (categorias.length === 0) return null;
 
   return (
@@ -27,21 +31,22 @@ const SeletorCategoria = ({ categorias, valorSelecionado, onSelecionar }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: { marginTop: espacamento.sm },
-  label: { ...tipografia.caption, color: cores.textoTerciario, marginBottom: espacamento.xs },
-  chip: {
-    paddingVertical: 6,
-    paddingHorizontal: espacamento.md,
-    borderRadius: raio.pill,
-    borderWidth: 1,
-    borderColor: cores.borda,
-    marginRight: espacamento.xs,
-    backgroundColor: cores.superficie,
-  },
-  chipSelecionado: { backgroundColor: cores.primaria, borderColor: cores.primaria },
-  texto: { color: cores.textoSecundario, fontSize: 13 },
-  textoSelecionado: { color: cores.branco, fontWeight: '700' },
-});
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    container: { marginTop: espacamento.sm },
+    label: { fontSize: 13, color: cores.textoTerciario, marginBottom: espacamento.xs },
+    chip: {
+      paddingVertical: 6,
+      paddingHorizontal: espacamento.md,
+      borderRadius: raio.pill,
+      borderWidth: 1,
+      borderColor: cores.borda,
+      marginRight: espacamento.xs,
+      backgroundColor: cores.superficie,
+    },
+    chipSelecionado: { backgroundColor: cores.primaria, borderColor: cores.primaria },
+    texto: { color: cores.textoSecundario, fontSize: 13 },
+    textoSelecionado: { color: cores.branco, fontWeight: '700' },
+  });
 
 export default SeletorCategoria;

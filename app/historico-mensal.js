@@ -1,10 +1,11 @@
 import { useState, useCallback } from 'react';
 import { StyleSheet, View, Text, FlatList, Pressable } from 'react-native';
-import { useFocusEffect, useRouter } from  'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { listarMesesComGastos, filtrarGastosPorMes, labelMes, obterAnoMes } from '../utils/periodo';
-import { cores, espacamento, tipografia, raio, sombra } from '../constants/theme';
+import { espacamento, tipografia, raio, sombra } from '../constants/theme';
+import { useTema } from '../context/ThemeContext';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
@@ -12,6 +13,8 @@ export default function HistoricoMensal() {
   const [meses, setMeses] = useState([]);
   const router = useRouter();
   const atual = obterAnoMes(Date.now());
+  const { cores } = useTema();
+  const styles = criarEstilos(cores);
 
   useFocusEffect(
     useCallback(() => {
@@ -56,19 +59,13 @@ export default function HistoricoMensal() {
               onPress={() => router.push({ pathname: '/estatisticas', params: { ano: item.ano, mes: item.mes } })}
             >
               <View style={[styles.iconeContainer, ehMesAtual && styles.iconeContainerAtual]}>
-                <Ionicons
-                  name="calendar"
-                  size={18}
-                  color={ehMesAtual ? cores.branco : cores.primaria}
-                />
+                <Ionicons name="calendar" size={18} color={ehMesAtual ? cores.branco : cores.primaria} />
               </View>
 
               <View style={styles.info}>
-                <View style={styles.linhaTopo}>
-                  <Text style={[styles.nomeMes, ehMesAtual && styles.nomeMesAtual]}>
-                    {labelMes(item.ano, item.mes)}
-                  </Text>
-                </View>
+                <Text style={[styles.nomeMes, ehMesAtual && styles.nomeMesAtual]}>
+                  {labelMes(item.ano, item.mes)}
+                </Text>
                 <Text style={[styles.quantidade, ehMesAtual && styles.quantidadeAtual]}>
                   {item.quantidade} {item.quantidade === 1 ? 'gasto' : 'gastos'}
                 </Text>
@@ -87,11 +84,7 @@ export default function HistoricoMensal() {
                 <Text style={[styles.valorMes, ehMesAtual && styles.valorMesAtual]}>
                   R$ {item.total.toFixed(2)}
                 </Text>
-                <Ionicons
-                  name="chevron-forward"
-                  size={16}
-                  color={ehMesAtual ? 'rgba(255,255,255,0.8)' : cores.textoTerciario}
-                />
+                <Ionicons name="chevron-forward" size={16} color={ehMesAtual ? 'rgba(255,255,255,0.8)' : cores.textoTerciario} />
               </View>
             </Pressable>
           );
@@ -102,65 +95,32 @@ export default function HistoricoMensal() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxxl, paddingHorizontal: espacamento.xl },
-  titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
-  lista: { paddingBottom: espacamento.xl },
-
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: cores.superficie,
-    borderRadius: raio.lg,
-    borderWidth: 1,
-    borderColor: cores.borda,
-    padding: espacamento.md,
-    marginBottom: espacamento.sm,
-    gap: espacamento.md,
-  },
-  cardAtual: {
-    backgroundColor: cores.primaria,
-    borderColor: cores.primaria,
-  },
-
-  iconeContainer: {
-    width: 38,
-    height: 38,
-    borderRadius: raio.md,
-    backgroundColor: cores.primariaClara,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  iconeContainerAtual: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-  },
-
-  info: { flex: 1, minWidth: 0 },
-  linhaTopo: { flexDirection: 'row', alignItems: 'center' },
-  nomeMes: { ...tipografia.bodyBold, color: cores.textoPrimario },
-  nomeMesAtual: { color: cores.branco },
-  quantidade: { ...tipografia.caption, color: cores.textoSecundario, marginTop: 1, marginBottom: espacamento.xs },
-  quantidadeAtual: { color: 'rgba(255,255,255,0.85)' },
-
-  barraTrack: {
-    height: 4,
-    backgroundColor: cores.primariaClara,
-    borderRadius: raio.pill,
-    overflow: 'hidden',
-  },
-  barraFill: {
-    height: '100%',
-    backgroundColor: cores.primaria,
-    borderRadius: raio.pill,
-  },
-  barraFillAtual: {
-    backgroundColor: cores.branco,
-  },
-
-  valorContainer: { alignItems: 'flex-end', gap: 2 },
-  valorMes: { ...tipografia.bodyBold, color: cores.textoPrimario },
-  valorMesAtual: { color: cores.branco },
-
-  vazio: { ...tipografia.body, color: cores.textoSecundario, textAlign: 'center', marginTop: espacamento.xl },
-});
+const criarEstilos = (cores) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: cores.fundo, paddingTop: espacamento.xxxl, paddingHorizontal: espacamento.xl },
+    titulo: { ...tipografia.h1, color: cores.textoPrimario, marginBottom: espacamento.lg },
+    lista: { paddingBottom: espacamento.xl },
+    card: {
+      flexDirection: 'row', alignItems: 'center', backgroundColor: cores.superficie,
+      borderRadius: raio.lg, borderWidth: 1, borderColor: cores.borda,
+      padding: espacamento.md, marginBottom: espacamento.sm, gap: espacamento.md,
+    },
+    cardAtual: { backgroundColor: cores.primaria, borderColor: cores.primaria },
+    iconeContainer: {
+      width: 38, height: 38, borderRadius: raio.md, backgroundColor: cores.primariaClara,
+      alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+    },
+    iconeContainerAtual: { backgroundColor: 'rgba(255,255,255,0.2)' },
+    info: { flex: 1, minWidth: 0 },
+    nomeMes: { ...tipografia.bodyBold, color: cores.textoPrimario },
+    nomeMesAtual: { color: cores.branco },
+    quantidade: { ...tipografia.caption, color: cores.textoSecundario, marginTop: 1, marginBottom: espacamento.xs },
+    quantidadeAtual: { color: 'rgba(255,255,255,0.85)' },
+    barraTrack: { height: 4, backgroundColor: cores.primariaClara, borderRadius: raio.pill, overflow: 'hidden' },
+    barraFill: { height: '100%', backgroundColor: cores.primaria, borderRadius: raio.pill },
+    barraFillAtual: { backgroundColor: cores.branco },
+    valorContainer: { alignItems: 'flex-end', gap: 2 },
+    valorMes: { ...tipografia.bodyBold, color: cores.textoPrimario },
+    valorMesAtual: { color: cores.branco },
+    vazio: { ...tipografia.body, color: cores.textoSecundario, textAlign: 'center', marginTop: espacamento.xl },
+  });
