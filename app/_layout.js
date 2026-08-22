@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { ThemeProvider, useTema } from '../context/ThemeContext';
+import { PremiumProvider } from '../context/PremiumContext';
 
 function LayoutInterno() {
   const { cores } = useTema();
@@ -21,14 +22,17 @@ function LayoutInterno() {
       <Stack.Screen name="estatisticas" options={{ headerShown: false }} />
       <Stack.Screen name="historico-mensal" options={{ headerShown: false }} />
       <Stack.Screen name="todos-gastos" options={{ headerShown: false }} />
+      <Stack.Screen name="configuracoes" options={{ title: 'Configurações' }} />
     </Stack>
   );
 }
 
 export default function Layout() {
   return (
-    <ThemeProvider>
-      <LayoutInterno />
-    </ThemeProvider>
+    <PremiumProvider>
+      <ThemeProvider>
+        <LayoutInterno />
+      </ThemeProvider>
+    </PremiumProvider>
   );
 }

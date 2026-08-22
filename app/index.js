@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { StyleSheet, View, Pressable, Text } from 'react-native';
+import { StyleSheet, View, Pressable, Text, Alert } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,6 +10,7 @@ import { registrarEvento } from '../utils/historico';
 import { filtrarGastosRecentes, filtrarGastosPorMes, obterAnoMes } from '../utils/periodo';
 import { espacamento, tipografia } from '../constants/theme';
 import { useTema } from '../context/ThemeContext';
+import { usePremium } from '../context/PremiumContext';
 
 const CHAVE_ARMAZENAMENTO = 'gastos';
 
@@ -17,6 +18,7 @@ export default function Index() {
   const [gastos, setGastos] = useState([]);
   const router = useRouter();
   const { cores, temaEscuroAtivo, alternarTema } = useTema();
+  const { isPremium, alternarPremiumDebug } = usePremium();
   const styles = criarEstilos(cores);
 
   useFocusEffect(
@@ -53,6 +55,18 @@ export default function Index() {
     }
   };
 
+  const handleTocarBotaoTema = () => {
+    if (!isPremium) {
+      Alert.alert(
+        'Recurso Premium',
+        'O tema escuro está disponível apenas para assinantes Premium.',
+        [{ text: 'Entendi', style: 'cancel' }]
+      );
+      return;
+    }
+    alternarTema();
+  };
+
   const { ano, mes } = obterAnoMes(Date.now());
   const gastosDoMesAtual = filtrarGastosPorMes(gastos, ano, mes);
   const totalDoMesAtual = gastosDoMesAtual.reduce((soma, item) => soma + item.valor, 0);
@@ -63,17 +77,13 @@ export default function Index() {
       <View style={styles.header}>
         <Text style={styles.titulo}>Meus Gastos</Text>
         <View style={styles.acoesHeader}>
-          <Pressable style={styles.botaoDebugTema} onPress={alternarTema} hitSlop={8}>
-            <Ionicons
-              name={temaEscuroAtivo ? 'sunny' : 'moon'}
-              size={18}
-              color={cores.primaria}
-            />
-          </Pressable>
-          <Pressable style={styles.fab} onPress={() => router.push('/adicionar')} hitSlop={8}>
-            <Ionicons name="add" size={22} color={cores.branco} />
-          </Pressable>
-        </View>
+          <Pressable style={styles.botaoConfiguracoes} onPress={() => router.push('/configuracoes')} hitSlop={8}>
+          <Ionicons name="settings-outline" size={20} color={cores.primaria} />
+        </Pressable>
+        <Pressable style={styles.fab} onPress={() => router.push('/adicionar')} hitSlop={8}>
+        <Ionicons name="add" size={22} color={cores.branco} />
+  </Pressable>
+</View>
       </View>
 
       <RendaMensal totalGasto={totalDoMesAtual} onPress={() => router.push('/estatisticas')} />
@@ -107,7 +117,7 @@ const criarEstilos = (cores) =>
     },
     titulo: { ...tipografia.h1, color: cores.textoPrimario, letterSpacing: -0.4 },
     acoesHeader: { flexDirection: 'row', alignItems: 'center', gap: espacamento.sm },
-    botaoDebugTema: {
+    botaoConfiguracoes: {
       width: 36,
       height: 36,
       borderRadius: 10,
